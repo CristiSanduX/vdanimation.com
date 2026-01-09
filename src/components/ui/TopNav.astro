@@ -1,0 +1,28 @@
+---
+const { brand = "VD ANIMATION" } = Astro.props;
+---
+
+<header class="absolute inset-x-0 top-0 z-50">
+  <nav class="mx-auto flex max-w-7xl items-center justify-between px-8 py-6 text-white">
+    <a
+      href="/sale"
+      class="text-xs tracking-[0.22em] uppercase opacity-90 transition hover:opacity-100"
+    >
+      Artworks on sale
+    </a>
+
+    <a
+      href="/"
+      class="text-sm tracking-[0.35em] uppercase opacity-95 transition hover:opacity-100"
+    >
+      {brand}
+    </a>
+
+    <a
+      href="/custom"
+      class="text-xs tracking-[0.22em] uppercase opacity-90 transition hover:opacity-100"
+    >
+      Order custom art
+    </a>
+  </nav>
+</header>
