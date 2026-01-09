@@ -1,12 +1,13 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import TopNav from "../components/ui/TopNav.astro";
+import HeroTriSplit from "../components/hero/HeroTriSplit";
 ---
 
 <Layout title="VD Animation">
   <TopNav brand="VD ANIMATION" />
 
   <main class="relative h-screen w-screen overflow-hidden">
-    <!-- aici intră HERO-ul cu 3 coloane -->
+    <HeroTriSplit client:load />
   </main>
 </Layout>
