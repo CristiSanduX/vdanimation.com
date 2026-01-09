@@ -3,26 +3,72 @@ const { brand = "VD ANIMATION" } = Astro.props;
 ---
 
 <header class="absolute inset-x-0 top-0 z-50">
-  <nav class="mx-auto flex max-w-7xl items-center justify-between px-8 py-6 text-white">
-    <a
-      href="/sale"
-      class="text-xs tracking-[0.22em] uppercase opacity-90 transition hover:opacity-100"
-    >
-      Artworks on sale
-    </a>
+  <nav
+    class="mx-auto grid max-w-xl grid-cols-3 items-center
+           px-4 py-6 text-white"
+  >
 
-    <a
-      href="/"
-      class="text-sm tracking-[0.35em] uppercase opacity-95 transition hover:opacity-100"
-    >
-      {brand}
-    </a>
+    <!-- LEFT -->
+    <div class="flex justify-end pr-1">
+      <a
+  href="/sale"
+  class="group relative text-base font-black uppercase
+         tracking-[0.32em] whitespace-nowrap leading-none
+         text-white/95 transition hover:text-white"
+>
 
-    <a
-      href="/custom"
-      class="text-xs tracking-[0.22em] uppercase opacity-90 transition hover:opacity-100"
-    >
-      Order custom art
-    </a>
+        <span class="relative z-10">Artworks on sale</span>
+        <span
+          class="absolute -bottom-2 left-0 h-[3px] w-full
+                 origin-left scale-x-0 bg-white
+                 transition-transform duration-300
+                 group-hover:scale-x-100"
+        />
+      </a>
+    </div>
+
+    <!-- CENTER LOGO -->
+    <div class="flex justify-center">
+      <a href="/" class="group relative flex items-center justify-center">
+        <img
+          src="/logo/vd-logo.png"
+          alt="VD Animation logo"
+          class="h-30 w-auto opacity-95 transition duration-300
+                 group-hover:opacity-100
+                 group-hover:scale-[1.1]
+                 drop-shadow-[0_15px_70px_rgba(255,255,255,0.35)]"
+          draggable="false"
+        />
+
+        <!-- glow cinematic -->
+        <span
+          class="pointer-events-none absolute inset-[-24px]
+                 rounded-full opacity-0 blur-3xl
+                 transition duration-300
+                 group-hover:opacity-100"
+          style="background: radial-gradient(circle, rgba(255,255,255,0.35), rgba(255,255,255,0) 65%)"
+        ></span>
+      </a>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="flex justify-start pl-1">
+      <a
+  href="/custom"
+  class="group relative text-base font-black uppercase
+         tracking-[0.32em] whitespace-nowrap leading-none
+         text-white/95 transition hover:text-white"
+>
+
+        <span class="relative z-10">Order custom art</span>
+        <span
+          class="absolute -bottom-2 left-0 h-[3px] w-full
+                 origin-left scale-x-0 bg-white
+                 transition-transform duration-300
+                 group-hover:scale-x-100"
+        />
+      </a>
+    </div>
+
   </nav>
 </header>
