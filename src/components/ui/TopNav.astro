@@ -2,21 +2,56 @@
 const { brand = "VD ANIMATION" } = Astro.props;
 ---
 
-<header class="absolute inset-x-0 top-0 z-50">
-  <nav
-    class="mx-auto grid max-w-xl grid-cols-3 items-center
-           px-4 py-6 text-white"
-  >
+<header class="absolute inset-x-0 top-0 z-50 text-white">
+  <!-- MOBILE (stacked): links row + logo under -->
+  <nav class="mx-auto w-full px-4 py-4 sm:hidden">
+    <div class="flex items-center justify-between">
+      <a
+        href="/sale"
+        class="relative text-[11px] font-black uppercase tracking-[0.22em]
+               whitespace-nowrap leading-none text-white/95 transition hover:text-white"
+      >
+        Artworks on sale
+      </a>
 
+      <a
+        href="/custom"
+        class="relative text-[11px] font-black uppercase tracking-[0.22em]
+               whitespace-nowrap leading-none text-white/95 transition hover:text-white"
+      >
+        Order custom art
+      </a>
+    </div>
+
+    <div class="mt-4 flex justify-center">
+      <a href="/" class="group relative flex items-center justify-center">
+        <img
+          src="/logo/vd-logo.png"
+          alt="VD Animation logo"
+          class="h-[72px] w-auto opacity-95 transition duration-300
+                 group-hover:opacity-100 group-hover:scale-[1.06]
+                 drop-shadow-[0_14px_60px_rgba(255,255,255,0.30)]"
+          draggable="false"
+        />
+        <span
+          class="pointer-events-none absolute inset-[-18px] rounded-full opacity-0 blur-3xl
+                 transition duration-300 group-hover:opacity-100"
+          style="background: radial-gradient(circle, rgba(255,255,255,0.28), rgba(255,255,255,0) 65%)"
+        ></span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- DESKTOP (3 cols, tight like your design) -->
+  <nav class="mx-auto hidden max-w-xl grid-cols-3 items-center px-4 py-6 sm:grid">
     <!-- LEFT -->
     <div class="flex justify-end pr-1">
       <a
-  href="/sale"
-  class="group relative text-base font-black uppercase
-         tracking-[0.32em] whitespace-nowrap leading-none
-         text-white/95 transition hover:text-white"
->
-
+        href="/sale"
+        class="group relative text-base font-black uppercase
+               tracking-[0.32em] whitespace-nowrap leading-none
+               text-white/95 transition hover:text-white"
+      >
         <span class="relative z-10">Artworks on sale</span>
         <span
           class="absolute -bottom-2 left-0 h-[3px] w-full
@@ -33,19 +68,14 @@ const { brand = "VD ANIMATION" } = Astro.props;
         <img
           src="/logo/vd-logo.png"
           alt="VD Animation logo"
-          class="h-30 w-auto opacity-95 transition duration-300
-                 group-hover:opacity-100
-                 group-hover:scale-[1.1]
+          class="h-[120px] w-auto opacity-95 transition duration-300
+                 group-hover:opacity-100 group-hover:scale-[1.1]
                  drop-shadow-[0_15px_70px_rgba(255,255,255,0.35)]"
           draggable="false"
         />
-
-        <!-- glow cinematic -->
         <span
-          class="pointer-events-none absolute inset-[-24px]
-                 rounded-full opacity-0 blur-3xl
-                 transition duration-300
-                 group-hover:opacity-100"
+          class="pointer-events-none absolute inset-[-24px] rounded-full opacity-0 blur-3xl
+                 transition duration-300 group-hover:opacity-100"
           style="background: radial-gradient(circle, rgba(255,255,255,0.35), rgba(255,255,255,0) 65%)"
         ></span>
       </a>
@@ -54,12 +84,11 @@ const { brand = "VD ANIMATION" } = Astro.props;
     <!-- RIGHT -->
     <div class="flex justify-start pl-1">
       <a
-  href="/custom"
-  class="group relative text-base font-black uppercase
-         tracking-[0.32em] whitespace-nowrap leading-none
-         text-white/95 transition hover:text-white"
->
-
+        href="/custom"
+        class="group relative text-base font-black uppercase
+               tracking-[0.32em] whitespace-nowrap leading-none
+               text-white/95 transition hover:text-white"
+      >
         <span class="relative z-10">Order custom art</span>
         <span
           class="absolute -bottom-2 left-0 h-[3px] w-full
@@ -69,6 +98,5 @@ const { brand = "VD ANIMATION" } = Astro.props;
         />
       </a>
     </div>
-
   </nav>
 </header>

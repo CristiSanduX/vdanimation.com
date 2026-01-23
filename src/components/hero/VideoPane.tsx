@@ -111,21 +111,26 @@ export default function VideoPane({
       />
 
       {/* Title */}
-      {showTitle && (
-        <div className="absolute inset-x-0 bottom-9 px-6">
-          <div
-            className={[
-              "text-center font-semibold tracking-[0.18em] sm:tracking-[0.22em]",
-              "text-4xl sm:text-5xl md:text-6xl",
-              "drop-shadow-[0_10px_30px_rgba(0,0,0,0.55)]",
-              "transition-transform duration-300",
-              active ? "translate-y-0" : "translate-y-1",
-            ].join(" ")}
-          >
-            {item.title}
-          </div>
-        </div>
-      )}
+{showTitle && (
+  <div className="absolute inset-x-0 bottom-12 sm:bottom-10 px-5">
+    <div
+      className={[
+        "text-center font-black uppercase whitespace-nowrap leading-none",
+        // mobile smaller + higher, desktop bigger
+        "text-2xl sm:text-4xl lg:text-5xl",
+        // tracking tighter on mobile
+        "tracking-[0.16em] sm:tracking-[0.22em]",
+        "drop-shadow-[0_10px_30px_rgba(0,0,0,0.55)]",
+        "transition-all duration-300",
+        active ? "opacity-100 scale-100" : "opacity-90 scale-[0.96]",
+      ].join(" ")}
+    >
+      {item.title}
+    </div>
+  </div>
+)}
+
+
     </div>
   );
 }

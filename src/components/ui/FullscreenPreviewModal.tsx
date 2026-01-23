@@ -6,12 +6,16 @@ export default function FullscreenPreviewModal({
   title,
   poster,
   mp4,
+  buyUrl,
+  priceLabel,
   onClose,
 }: {
   open: boolean;
   title: string;
   poster: string;
   mp4: string;
+  buyUrl: string;
+  priceLabel?: string;
   onClose: () => void;
 }) {
   const wrapRef = useRef<HTMLDivElement | null>(null);
@@ -58,6 +62,7 @@ export default function FullscreenPreviewModal({
       role="dialog"
       aria-modal="true"
     >
+      {/* top close */}
       <button
         onClick={onClose}
         className="absolute right-5 top-5 rounded-full bg-white/10 px-4 py-2 text-xs tracking-[0.22em] uppercase text-white/90 hover:bg-white/15"
@@ -70,7 +75,7 @@ export default function FullscreenPreviewModal({
           {title}
         </div>
 
-        <div className="relative w-full max-w-4xl overflow-hidden rounded-2xl">
+        <div className="relative w-full max-w-5xl overflow-hidden rounded-2xl border border-white/10 bg-white/5">
           <video
             ref={videoRef}
             className="h-full w-full object-contain"
@@ -83,6 +88,30 @@ export default function FullscreenPreviewModal({
           >
             <source src={mp4} type="video/mp4" />
           </video>
+        </div>
+
+        {/* actions */}
+        <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row">
+          <a
+            href={buyUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center justify-center rounded-full bg-white px-7 py-3 text-xs font-black uppercase tracking-[0.22em] text-black transition hover:scale-[1.02]"
+          >
+            Buy{priceLabel ? ` ${priceLabel}` : ""}
+          </a>
+
+          <button
+            onClick={onClose}
+            className="inline-flex items-center justify-center rounded-full border border-white/18 bg-white/5 px-7 py-3 text-xs font-black uppercase tracking-[0.22em] text-white/90 transition hover:bg-white/10"
+          >
+            Back
+          </button>
+        </div>
+
+        {/* tiny helper */}
+        <div className="mt-4 text-[11px] tracking-[0.22em] uppercase text-white/40">
+          Press ESC to close
         </div>
       </div>
     </div>

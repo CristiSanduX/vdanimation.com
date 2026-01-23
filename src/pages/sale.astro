@@ -1,0 +1,12 @@
+---
+import Layout from "../layouts/Layout.astro";
+import TopNav from "../components/ui/TopNav.astro";
+import SaleGrid from "../components/sale/SaleGrid";
+---
+
+<Layout title="Artworks on sale • VD Animation">
+  <TopNav brand="VD ANIMATION" />
+  <main class="relative min-h-screen w-full overflow-hidden bg-black text-white">
+    <SaleGrid client:load />
+  </main>
+</Layout>

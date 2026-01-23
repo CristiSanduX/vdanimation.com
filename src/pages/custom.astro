@@ -1,0 +1,276 @@
+---
+import Layout from "../layouts/Layout.astro";
+import TopNav from "../components/ui/TopNav.astro";
+
+// ✅ schimbă aici când ai link-ul final
+const ORDER_FORM_URL = "https://forms.gle/your-google-form";
+const INSTAGRAM_URL = "https://instagram.com/yourhandle";
+const EMAIL = "hello@vdanimation.com";
+---
+
+<Layout title="Order custom art • VD Animation">
+  <TopNav brand="VD ANIMATION" />
+
+  <main class="relative min-h-screen w-full overflow-hidden bg-black text-white">
+    <!-- Ambient glows -->
+    <div class="pointer-events-none absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-white/10 blur-3xl"></div>
+    <div class="pointer-events-none absolute -bottom-48 left-16 h-[420px] w-[420px] rounded-full bg-white/5 blur-3xl"></div>
+
+    <div class="mx-auto max-w-6xl px-6 pt-32 pb-20">
+      <!-- HERO -->
+      <section class="relative">
+        <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs tracking-[0.22em] uppercase text-white/80">
+          Custom commissions • Limited slots
+        </div>
+
+        <h1 class="mt-6 text-4xl font-black tracking-tight sm:text-5xl">
+          Order custom art
+        </h1>
+
+        <p class="mt-4 max-w-2xl text-base text-white/70 sm:text-lg">
+          Tell me what you want, share your references, and I’ll bring it to life.
+          Choose a style — <span class="text-white/90">Semi-Real</span>, <span class="text-white/90">Fictional</span>, or <span class="text-white/90">Anime</span>.
+        </p>
+
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <a
+            href={ORDER_FORM_URL}
+            target="_blank"
+            rel="noreferrer"
+            class="inline-flex items-center justify-center rounded-2xl bg-white px-6 py-4 text-sm font-black uppercase tracking-[0.22em] text-black transition hover:scale-[1.02]"
+          >
+            Start your order
+          </a>
+
+          <a
+            href={INSTAGRAM_URL}
+            target="_blank"
+            rel="noreferrer"
+            class="inline-flex items-center justify-center rounded-2xl border border-white/20 bg-white/5 px-6 py-4 text-sm font-black uppercase tracking-[0.22em] text-white/90 transition hover:bg-white/10"
+          >
+            DM on Instagram
+          </a>
+
+          <a
+            href={`mailto:${EMAIL}`}
+            class="text-sm font-black uppercase tracking-[0.22em] text-white/70 hover:text-white"
+          >
+            Email: {EMAIL}
+          </a>
+        </div>
+
+        <!-- subtle divider -->
+        <div class="mt-10 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent"></div>
+      </section>
+
+      <!-- PROCESS -->
+      <section class="mt-14">
+        <h2 class="text-xl font-black uppercase tracking-[0.22em]">How it works</h2>
+
+        <div class="mt-6 grid gap-4 sm:grid-cols-3">
+          <div class="rounded-3xl border border-white/12 bg-white/5 p-6">
+            <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">Step 01</div>
+            <div class="mt-3 text-lg font-black">Choose a style</div>
+            <p class="mt-2 text-sm text-white/70">
+              Semi-Real, Fictional, or Anime. You can also request a blend.
+            </p>
+          </div>
+
+          <div class="rounded-3xl border border-white/12 bg-white/5 p-6">
+            <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">Step 02</div>
+            <div class="mt-3 text-lg font-black">Send references</div>
+            <p class="mt-2 text-sm text-white/70">
+              Photos, screenshots, pose ideas, outfits, vibe — the more clear, the better.
+            </p>
+          </div>
+
+          <div class="rounded-3xl border border-white/12 bg-white/5 p-6">
+            <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">Step 03</div>
+            <div class="mt-3 text-lg font-black">Delivery</div>
+            <p class="mt-2 text-sm text-white/70">
+              I deliver the final artwork + revisions included (depending on package).
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- WHAT YOU GET -->
+      <section class="mt-14">
+        <div class="grid gap-8 lg:grid-cols-2">
+          <div class="rounded-3xl border border-white/12 bg-white/5 p-7">
+            <h2 class="text-xl font-black uppercase tracking-[0.22em]">What you get</h2>
+            <ul class="mt-5 space-y-3 text-sm text-white/75">
+              <li class="flex gap-3">
+                <span class="mt-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-white/70"></span>
+                High-resolution final file (ready for social / print)
+              </li>
+              <li class="flex gap-3">
+                <span class="mt-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-white/70"></span>
+                Clean composition + professional lighting
+              </li>
+              <li class="flex gap-3">
+                <span class="mt-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-white/70"></span>
+                Revisions (count depends on package)
+              </li>
+              <li class="flex gap-3">
+                <span class="mt-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-white/70"></span>
+                Commercial usage available (optional)
+              </li>
+            </ul>
+          </div>
+
+          <div class="rounded-3xl border border-white/12 bg-white/5 p-7">
+            <h2 class="text-xl font-black uppercase tracking-[0.22em]">Best results if you include</h2>
+            <ul class="mt-5 space-y-3 text-sm text-white/75">
+              <li class="flex gap-3">
+                <span class="mt-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-white/70"></span>
+                Reference images (face / outfit / mood)
+              </li>
+              <li class="flex gap-3">
+                <span class="mt-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-white/70"></span>
+                Background preference (simple / cinematic / detailed)
+              </li>
+              <li class="flex gap-3">
+                <span class="mt-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-white/70"></span>
+                Deadline (if any) + intended use (avatar / poster / gift)
+              </li>
+              <li class="flex gap-3">
+                <span class="mt-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-white/70"></span>
+                Your budget range (helps pick the right package)
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- PACKAGES (placeholder, you can edit later) -->
+      <section class="mt-14">
+        <div class="flex items-end justify-between gap-6">
+          <h2 class="text-xl font-black uppercase tracking-[0.22em]">Packages</h2>
+          <div class="text-xs uppercase tracking-[0.22em] text-white/55">
+            Prices can vary by complexity
+          </div>
+        </div>
+
+        <div class="mt-6 grid gap-4 lg:grid-cols-3">
+          <div class="rounded-3xl border border-white/12 bg-white/5 p-7">
+            <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">Basic</div>
+            <div class="mt-3 text-2xl font-black">Portrait</div>
+            <p class="mt-2 text-sm text-white/70">Perfect for profile pictures.</p>
+            <div class="mt-6 text-sm text-white/75">
+              • 1 character<br />
+              • Simple background<br />
+              • 1 revision
+            </div>
+          </div>
+
+          <div class="rounded-3xl border border-white/20 bg-white/8 p-7">
+            <div class="text-xs font-black uppercase tracking-[0.28em] text-white/70">Most popular</div>
+            <div class="mt-3 text-2xl font-black">Cinematic</div>
+            <p class="mt-2 text-sm text-white/70">More detail, more atmosphere.</p>
+            <div class="mt-6 text-sm text-white/80">
+              • 1–2 characters<br />
+              • Enhanced lighting<br />
+              • 2 revisions
+            </div>
+          </div>
+
+          <div class="rounded-3xl border border-white/12 bg-white/5 p-7">
+            <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">Pro</div>
+            <div class="mt-3 text-2xl font-black">Full scene</div>
+            <p class="mt-2 text-sm text-white/70">Maximum detail & complexity.</p>
+            <div class="mt-6 text-sm text-white/75">
+              • Full background<br />
+              • Advanced effects<br />
+              • 3 revisions
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+          <a
+            href={ORDER_FORM_URL}
+            target="_blank"
+            rel="noreferrer"
+            class="inline-flex items-center justify-center rounded-2xl bg-white px-6 py-4 text-sm font-black uppercase tracking-[0.22em] text-black transition hover:scale-[1.02]"
+          >
+            Start your order
+          </a>
+          <a
+            href={INSTAGRAM_URL}
+            target="_blank"
+            rel="noreferrer"
+            class="inline-flex items-center justify-center rounded-2xl border border-white/20 bg-white/5 px-6 py-4 text-sm font-black uppercase tracking-[0.22em] text-white/90 transition hover:bg-white/10"
+          >
+            Ask a question (DM)
+          </a>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section class="mt-16">
+        <h2 class="text-xl font-black uppercase tracking-[0.22em]">FAQ</h2>
+
+        <div class="mt-6 grid gap-4 lg:grid-cols-2">
+          <details class="group rounded-3xl border border-white/12 bg-white/5 p-6">
+            <summary class="cursor-pointer list-none text-sm font-black uppercase tracking-[0.20em] text-white/90">
+              How long does it take?
+            </summary>
+            <p class="mt-3 text-sm text-white/70">
+              Depends on complexity and current queue. If you have a deadline, include it in the order form.
+            </p>
+          </details>
+
+          <details class="group rounded-3xl border border-white/12 bg-white/5 p-6">
+            <summary class="cursor-pointer list-none text-sm font-black uppercase tracking-[0.20em] text-white/90">
+              Can I request revisions?
+            </summary>
+            <p class="mt-3 text-sm text-white/70">
+              Yes. Revision count depends on the package. Major changes after approval may cost extra.
+            </p>
+          </details>
+
+          <details class="group rounded-3xl border border-white/12 bg-white/5 p-6">
+            <summary class="cursor-pointer list-none text-sm font-black uppercase tracking-[0.20em] text-white/90">
+              Do you offer commercial usage?
+            </summary>
+            <p class="mt-3 text-sm text-white/70">
+              Commercial licensing is available. Mention your intended usage in the form.
+            </p>
+          </details>
+
+          <details class="group rounded-3xl border border-white/12 bg-white/5 p-6">
+            <summary class="cursor-pointer list-none text-sm font-black uppercase tracking-[0.20em] text-white/90">
+              What files do I receive?
+            </summary>
+            <p class="mt-3 text-sm text-white/70">
+              High-resolution final export (format depends on the project). Print-ready options available.
+            </p>
+          </details>
+        </div>
+      </section>
+
+      <!-- FOOTER CTA -->
+      <section class="mt-16 rounded-3xl border border-white/12 bg-white/5 p-8">
+        <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">Ready?</div>
+            <div class="mt-2 text-2xl font-black">Let’s create something iconic.</div>
+            <div class="mt-2 text-sm text-white/70">
+              Fill the form — I’ll reply with availability and next steps.
+            </div>
+          </div>
+
+          <a
+            href={ORDER_FORM_URL}
+            target="_blank"
+            rel="noreferrer"
+            class="inline-flex items-center justify-center rounded-2xl bg-white px-6 py-4 text-sm font-black uppercase tracking-[0.22em] text-black transition hover:scale-[1.02]"
+          >
+            Start your order
+          </a>
+        </div>
+      </section>
+    </div>
+  </main>
+</Layout>
