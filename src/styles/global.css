@@ -1,1 +1,27 @@
 @import "tailwindcss";
+
+/* Gotham Black */
+@font-face {
+  font-family: "Gotham";
+  src: url("/fonts/Gotham-Black.woff2") format("woff2");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ✅ definește utilitare după Tailwind, în layer-ul lui */
+@layer utilities {
+  .hero-gotham {
+    font-family: "Gotham", system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+  }
+
+  .hero-gotham-tight {
+    font-family: "Gotham", system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+  }
+}

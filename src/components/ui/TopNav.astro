@@ -2,9 +2,9 @@
 const { brand = "VD ANIMATION" } = Astro.props;
 ---
 
-<header class="absolute inset-x-0 top-0 z-50 text-white">
-  <!-- MOBILE (stacked): links row + logo under -->
-  <nav class="mx-auto w-full px-4 py-4 sm:hidden">
+<header class="fixed inset-x-0 top-0 z-[90] text-white">
+  <!-- MOBILE -->
+  <nav class="mx-auto w-full px-4 py-4 sm:hidden hero-gotham">
     <div class="flex items-center justify-between">
       <a
         href="/sale"
@@ -42,8 +42,8 @@ const { brand = "VD ANIMATION" } = Astro.props;
     </div>
   </nav>
 
-  <!-- DESKTOP (3 cols, tight like your design) -->
-  <nav class="mx-auto hidden max-w-xl grid-cols-3 items-center px-4 py-6 sm:grid">
+  <!-- DESKTOP -->
+  <nav class="mx-auto hidden max-w-xl grid-cols-3 items-center px-4 py-6 sm:grid hero-gotham">
     <!-- LEFT -->
     <div class="flex justify-end pr-1">
       <a
