@@ -1,0 +1,16 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+import FantasyGrid from "../components/fantasy/FantasyGrid";
+import { fantasyWorks } from "../data/fantasyWorks";
+import TopNav from "../components/ui/TopNav.astro";
+---
+
+<SiteLayout title="FANTASY | VD ANIMATION">
+  <TopNav brand="VD ANIMATION" />
+
+  <main class="w-full pt-[128px] sm:pt-[170px]">
+    <section class="w-full px-0 pb-6">
+      <FantasyGrid items={fantasyWorks} client:idle />
+    </section>
+  </main>
+</SiteLayout>

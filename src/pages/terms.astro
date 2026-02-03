@@ -1,0 +1,90 @@
+---
+import Layout from "../layouts/Layout.astro";
+import TopNav from "../components/ui/TopNav.astro";
+import Footer from "../components/ui/Footer.astro";
+---
+
+<Layout title="Terms • VD Animation">
+  <TopNav brand="VD ANIMATION" />
+
+  <main class="mx-auto max-w-4xl px-6 pt-28 pb-16 text-white">
+    <h1 class="text-3xl font-black tracking-tight">Terms & Conditions</h1>
+    <p class="mt-3 text-sm text-white/65">Last updated: {new Date().toISOString().slice(0, 10)}</p>
+
+    <div class="mt-10 space-y-8 text-sm leading-7 text-white/75">
+      <section>
+        <h2 class="text-base font-black uppercase tracking-[0.22em] text-white/90">Services</h2>
+        <p class="mt-3">
+          VD Animation provides digital artwork and animation services. Availability is limited and may depend
+          on current workload and project complexity.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-base font-black uppercase tracking-[0.22em] text-white/90">Orders & communication</h2>
+        <p class="mt-3">
+          Orders are initiated via an external order form or direct contact (e.g., email/Instagram). By submitting
+          an order request, you agree to provide accurate information and references needed for production.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-base font-black uppercase tracking-[0.22em] text-white/90">Payment & deposits</h2>
+        <p class="mt-3">
+          A deposit (typically 50% of the quoted price) may be required before work begins. Accepted payment methods
+          may include Wise, PayPal, crypto, and other methods as specified in the order form. If alternative payment
+          methods are used (e.g., skins/gift cards), pricing may be adjusted to match market value.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-base font-black uppercase tracking-[0.22em] text-white/90">Revisions</h2>
+        <p class="mt-3">
+          Revisions may be included depending on the selected package. Minor adjustments are typically included.
+          Major changes after approval (e.g., changing character, pose, or concept) may require additional fees.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-base font-black uppercase tracking-[0.22em] text-white/90">Delivery & timelines</h2>
+        <p class="mt-3">
+          Delivery times depend on complexity and queue. Estimated timelines are not guarantees. If you have a strict
+          deadline, you must communicate it before work begins.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-base font-black uppercase tracking-[0.22em] text-white/90">Refunds</h2>
+        <p class="mt-3">
+          Due to the custom nature of digital commissions, refunds are generally not available once work has started.
+          If a project is canceled before work begins, any paid deposit may be refunded at our discretion, minus fees
+          charged by payment providers.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-base font-black uppercase tracking-[0.22em] text-white/90">Usage rights</h2>
+        <p class="mt-3">
+          Unless otherwise agreed in writing, delivered artworks are for personal use (e.g., Steam profile, avatars).
+          Commercial usage or licensing must be requested explicitly and may require an additional fee.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-base font-black uppercase tracking-[0.22em] text-white/90">Third-party links</h2>
+        <p class="mt-3">
+          This site may include links to third-party services. We are not responsible for content, policies, or
+          practices of external sites.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-base font-black uppercase tracking-[0.22em] text-white/90">Contact</h2>
+        <p class="mt-3">
+          For questions regarding these Terms, please contact us using the email address displayed on the site.
+        </p>
+      </section>
+    </div>
+  </main>
+
+</Layout>

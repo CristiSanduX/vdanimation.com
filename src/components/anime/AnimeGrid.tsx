@@ -125,7 +125,7 @@ function AnimeItem({
             "absolute inset-0 h-full w-full",
             "object-cover",
             "scale-[1.08]",
-            "blur-3xl",
+            "blur-xl",
             "opacity-35",
             "[transform:translateZ(0)] [backface-visibility:hidden]",
           ].join(" ")}

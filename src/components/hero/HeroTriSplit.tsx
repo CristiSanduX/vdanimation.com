@@ -34,8 +34,6 @@ export default function HeroTriSplit() {
 
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [isTouch, setIsTouch] = useState(false);
-
-  // touch modal (kept for other panes; anime navigates)
   const [modalIndex, setModalIndex] = useState<number | null>(null);
 
   const paneRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -44,14 +42,14 @@ export default function HeroTriSplit() {
     setIsTouch(isTouchDevice());
   }, []);
 
-  // Smoothly animate widths using flex-grow (GSAP) — stable & premium
+  // GSAP flex-grow animation
   useEffect(() => {
     const panes = paneRefs.current.filter(Boolean) as HTMLDivElement[];
     if (panes.length !== items.length) return;
 
     const baseGrow = 1;
-    const activeGrow = 1.18; // expanded
-    const inactiveGrow = 0.91; // compressed
+    const activeGrow = 1.18;
+    const inactiveGrow = 0.91;
 
     panes.forEach((pane, i) => {
       const grow =
@@ -88,17 +86,24 @@ export default function HeroTriSplit() {
   const onClickPane = (i: number) => {
     const key = items[i]?.key;
 
-    // Always navigate on Anime (desktop + touch)
-    if (key === "anime") {
-      navigateTo("/anime");
+    // ✅ Desktop: navigate for all categories
+    if (!isTouch) {
+      if (key === "anime") return navigateTo("/anime");
+      if (key === "cinematic") return navigateTo("/cinematic");
+      if (key === "fantasy") return navigateTo("/fantasy");
       return;
     }
 
-    // On desktop we keep the tri-split hover behavior; no click action needed
-    if (!isTouch) return;
+    // ✅ Touch: recommended behavior = navigate as well (simple + consistent)
+    if (key === "anime") return navigateTo("/anime");
+    if (key === "cinematic") return navigateTo("/cinematic");
+    if (key === "fantasy") return navigateTo("/fantasy");
 
-    // Touch: open modal for non-anime panes
-    setModalIndex(i);
+    // If you *really* want modal on touch for Fantasy instead:
+    // if (key === "fantasy") {
+    //   setModalIndex(i);
+    //   return;
+    // }
   };
 
   const onKeyDownPane = (e: React.KeyboardEvent, i: number) => {
@@ -111,9 +116,12 @@ export default function HeroTriSplit() {
 
   return (
     <>
-      <div className="relative flex h-full w-full overflow-hidden" onMouseLeave={onLeave}>
+      <div
+        className="relative flex h-full w-full overflow-hidden"
+        onMouseLeave={onLeave}
+      >
         {items.map((item, i) => {
-          const isAnime = item.key === "anime";
+          const clickable = true;
 
           return (
             <div
@@ -123,7 +131,7 @@ export default function HeroTriSplit() {
               }}
               className={[
                 "relative flex min-w-0 flex-1 outline-none",
-                isAnime ? "cursor-pointer" : isTouch ? "cursor-pointer" : "cursor-default",
+                clickable ? "cursor-pointer" : "cursor-default",
               ].join(" ")}
               style={{ flexGrow: 1 }}
               onMouseEnter={() => onEnter(i)}
@@ -133,9 +141,8 @@ export default function HeroTriSplit() {
               onKeyDown={(e) => onKeyDownPane(e, i)}
               role="button"
               tabIndex={0}
-              aria-label={isAnime ? "Open Anime page" : `Open ${item.title}`}
+              aria-label={`Open ${item.title}`}
             >
-              {/* ✅ Gotham for pane contents */}
               <div className="absolute inset-0 hero-gotham">
                 <VideoPane
                   item={item}
@@ -144,18 +151,11 @@ export default function HeroTriSplit() {
                   showTitle
                 />
               </div>
-
-              {/* Optional tiny hint on Anime (desktop) */}
-              {isAnime && !isTouch && (
-                <div className="pointer-events-none absolute bottom-5 left-5 z-20 text-[11px] tracking-[0.24em] text-white/70 hero-gotham-tight">
-                  ENTER → /ANIME
-                </div>
-              )}
             </div>
           );
         })}
 
-        {/* ✅ black blur separators (between the 3 panes) */}
+        {/* separators */}
         <div className="pointer-events-none absolute inset-y-0 left-1/3 z-40 w-12 -translate-x-1/2">
           <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-transparent blur-2xl" />
         </div>
@@ -163,13 +163,13 @@ export default function HeroTriSplit() {
           <div className="absolute inset-0 bg-gradient-to-l from-black/85 via-black/45 to-transparent blur-2xl" />
         </div>
 
-        {/* subtle global vignette (optional) */}
+        {/* global vignette */}
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0)_0%,rgba(0,0,0,0.55)_72%,rgba(0,0,0,0.88)_100%)]" />
       </div>
 
-      {/* Touch modal for non-anime panes only */}
+      {/* touch modal (only if you enable modal behavior above) */}
       <FullscreenPreviewModal
-        open={modalItem !== null && modalItem.key !== "anime"}
+        open={modalItem !== null}
         title={modalItem?.title ?? ""}
         poster={modalItem?.poster ?? ""}
         mp4={modalItem?.mp4 ?? ""}

@@ -3,6 +3,7 @@
 // ✅ keeps poster + video layer
 // ✅ avoids first-load lag: no preload auto + no load() on mount
 // ✅ lazy attach src only when active
+// ✅ tighter title tracking (premium)
 
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
@@ -107,12 +108,9 @@ export default function VideoPane({
         // attach sources only when needed
         ensureSourcesAttached();
 
-        // Nudge a tiny seek only AFTER sources exist (still optional)
-        // On some WebKit builds, currentTime before src causes weirdness.
+        // tiny seek only if we already have metadata
         try {
-          if (video.readyState === 0) {
-            // metadata not loaded yet; don't seek
-          } else {
+          if (video.readyState !== 0) {
             video.currentTime = 0.001;
           }
         } catch {}
@@ -190,7 +188,8 @@ export default function VideoPane({
               "hero-gotham",
               "text-center font-black uppercase whitespace-nowrap leading-none",
               "text-2xl sm:text-4xl lg:text-5xl",
-              "tracking-[0.16em] sm:tracking-[0.22em]",
+              // ✅ tighter than before (was 0.16/0.22)
+              "tracking-tighter sm:tracking-tight",
               "[text-shadow:0_10px_30px_rgba(0,0,0,0.35)]",
               "transition-all duration-300",
               active ? "opacity-100 scale-100" : "opacity-95 scale-[0.98]",

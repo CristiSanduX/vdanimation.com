@@ -1,54 +1,57 @@
 ---
+// src/pages/custom.astro
 import Layout from "../layouts/Layout.astro";
 import TopNav from "../components/ui/TopNav.astro";
 
-// ✅ schimbă aici când ai link-ul final
-const ORDER_FORM_URL = "https://forms.gle/your-google-form";
-const INSTAGRAM_URL = "https://instagram.com/yourhandle";
-const EMAIL = "hello@vdanimation.com";
+const ORDER_FORM_URL = "https://forms.gle/CQZWEVTo1oHB4eg67";
+const INSTAGRAM_URL = "https://www.instagram.com/vda.aep/";
+const EMAIL = "contact@vdanimation.com";
+
+// optional: pune poza ta locală cu price list, sau scoate complet secțiunea "Price preview"
+const PRICE_PREVIEW_IMG = "/media/price-list.png";
 ---
 
-<Layout title="Order custom art • VD Animation">
+<Layout title="Steam Animated Artwork • VD Animation">
   <TopNav brand="VD ANIMATION" />
 
   <main class="relative min-h-screen w-full overflow-hidden bg-black text-white">
     <!-- Ambient glows -->
-    <div class="pointer-events-none absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-white/10 blur-3xl"></div>
-    <div class="pointer-events-none absolute -bottom-48 left-16 h-[420px] w-[420px] rounded-full bg-white/5 blur-3xl"></div>
+    <div class="pointer-events-none absolute -top-48 left-1/2 h-[620px] w-[620px] -translate-x-1/2 rounded-full bg-white/10 blur-3xl"></div>
+    <div class="pointer-events-none absolute -bottom-56 right-6 h-[520px] w-[520px] rounded-full bg-white/5 blur-3xl"></div>
 
-    <div class="mx-auto max-w-6xl px-6 pt-32 pb-20">
-      <!-- HERO -->
-      <section class="relative">
-        <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs tracking-[0.22em] uppercase text-white/80">
-          Custom commissions • Limited slots
+    <div class="mx-auto max-w-6xl px-6 pt-28 pb-24">
+      <!-- HERO (centered) -->
+      <section class="relative text-center">
+        <div class="mx-auto inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs tracking-[0.22em] uppercase text-white/80">
+          Steam profile • Animated artwork • Limited slots
         </div>
 
-        <h1 class="mt-6 text-4xl font-black tracking-tight sm:text-5xl">
-          Order custom art
+        <h1 class="mx-auto mt-6 max-w-4xl text-4xl font-black tracking-tight sm:text-6xl">
+          Steam Animated Artwork
         </h1>
 
-        <p class="mt-4 max-w-2xl text-base text-white/70 sm:text-lg">
-          Tell me what you want, share your references, and I’ll bring it to life.
-          Choose a style — <span class="text-white/90">Semi-Real</span>, <span class="text-white/90">Fictional</span>, or <span class="text-white/90">Anime</span>.
+        <p class="mx-auto mt-4 max-w-3xl text-base text-white/70 sm:text-lg">
+          Premium animated artwork for your Steam profile — cinematic, clean, optimized for Steam.
+          Fill the form once and I can start fast (no back-and-forth).
         </p>
 
-        <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:items-center">
           <a
             href={ORDER_FORM_URL}
             target="_blank"
             rel="noreferrer"
-            class="inline-flex items-center justify-center rounded-2xl bg-white px-6 py-4 text-sm font-black uppercase tracking-[0.22em] text-black transition hover:scale-[1.02]"
+            class="inline-flex w-full items-center justify-center rounded-2xl bg-white px-6 py-4 text-sm font-black uppercase tracking-[0.22em] text-black transition hover:scale-[1.02] sm:w-auto"
           >
-            Start your order
+            Start order (Google Form)
           </a>
 
           <a
             href={INSTAGRAM_URL}
             target="_blank"
             rel="noreferrer"
-            class="inline-flex items-center justify-center rounded-2xl border border-white/20 bg-white/5 px-6 py-4 text-sm font-black uppercase tracking-[0.22em] text-white/90 transition hover:bg-white/10"
+            class="inline-flex w-full items-center justify-center rounded-2xl border border-white/20 bg-white/5 px-6 py-4 text-sm font-black uppercase tracking-[0.22em] text-white/90 transition hover:bg-white/10 sm:w-auto"
           >
-            DM on Instagram
+            Quick question (DM)
           </a>
 
           <a
@@ -59,192 +62,258 @@ const EMAIL = "hello@vdanimation.com";
           </a>
         </div>
 
-        <!-- subtle divider -->
+        <div class="mx-auto mt-6 max-w-3xl rounded-3xl border border-white/12 bg-white/5 p-5 text-left">
+          <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">Important</div>
+          <ul class="mt-3 space-y-2 text-sm text-white/70">
+            <li>• Minimum <span class="text-white/90 font-black">50% deposit</span> required to start.</li>
+            <li>• Clear references = faster delivery.</li>
+            <li>• If complexity grows beyond budget, you’ll confirm before I proceed.</li>
+          </ul>
+        </div>
+
         <div class="mt-10 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent"></div>
       </section>
 
-      <!-- PROCESS -->
-      <section class="mt-14">
-        <h2 class="text-xl font-black uppercase tracking-[0.22em]">How it works</h2>
+      <!-- WHAT THE FORM ASKS (mapped 1:1) -->
+      <section class="mt-14 text-center">
+        <h2 class="text-xl font-black uppercase tracking-[0.22em]">What you’ll fill in the form</h2>
+        <p class="mx-auto mt-3 max-w-3xl text-sm text-white/65">
+          The form is designed to save time for both of us. Here’s exactly what it asks, so you can prepare in 2 minutes.
+        </p>
 
-        <div class="mt-6 grid gap-4 sm:grid-cols-3">
+        <div class="mt-6 grid gap-4 lg:grid-cols-3 text-left">
           <div class="rounded-3xl border border-white/12 bg-white/5 p-6">
-            <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">Step 01</div>
-            <div class="mt-3 text-lg font-black">Choose a style</div>
+            <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">01</div>
+            <div class="mt-3 text-lg font-black">Project idea</div>
             <p class="mt-2 text-sm text-white/70">
-              Semi-Real, Fictional, or Anime. You can also request a blend.
+              What vibe do you want? Anime / cyberpunk / minimal / dark, etc.
             </p>
           </div>
 
           <div class="rounded-3xl border border-white/12 bg-white/5 p-6">
-            <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">Step 02</div>
-            <div class="mt-3 text-lg font-black">Send references</div>
+            <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">02</div>
+            <div class="mt-3 text-lg font-black">Style + main color</div>
             <p class="mt-2 text-sm text-white/70">
-              Photos, screenshots, pose ideas, outfits, vibe — the more clear, the better.
+              Do you want a specific style? Black & white or custom palette.
             </p>
           </div>
 
           <div class="rounded-3xl border border-white/12 bg-white/5 p-6">
-            <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">Step 03</div>
-            <div class="mt-3 text-lg font-black">Delivery</div>
+            <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">03</div>
+            <div class="mt-3 text-lg font-black">What gets animated</div>
             <p class="mt-2 text-sm text-white/70">
-              I deliver the final artwork + revisions included (depending on package).
+              Character, text, logo, effects — and whether you already have the assets.
+            </p>
+          </div>
+
+          <div class="rounded-3xl border border-white/12 bg-white/5 p-6">
+            <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">04</div>
+            <div class="mt-3 text-lg font-black">Background + Theme link</div>
+            <p class="mt-2 text-sm text-white/70">
+              Steam background (existing) or we pick one. Optional profile theme link.
+            </p>
+          </div>
+
+          <div class="rounded-3xl border border-white/12 bg-white/5 p-6">
+            <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">05</div>
+            <div class="mt-3 text-lg font-black">Budget + over-budget rule</div>
+            <p class="mt-2 text-sm text-white/70">
+              You pick a range. If complexity increases, you approve before extra work.
+            </p>
+          </div>
+
+          <div class="rounded-3xl border border-white/12 bg-white/5 p-6">
+            <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">06</div>
+            <div class="mt-3 text-lg font-black">Steam permalink + receipt</div>
+            <p class="mt-2 text-sm text-white/70">
+              Your Steam link + email/name/country for invoice / receipt.
             </p>
           </div>
         </div>
       </section>
 
-      <!-- WHAT YOU GET -->
-      <section class="mt-14">
-        <div class="grid gap-8 lg:grid-cols-2">
-          <div class="rounded-3xl border border-white/12 bg-white/5 p-7">
-            <h2 class="text-xl font-black uppercase tracking-[0.22em]">What you get</h2>
-            <ul class="mt-5 space-y-3 text-sm text-white/75">
-              <li class="flex gap-3">
-                <span class="mt-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-white/70"></span>
-                High-resolution final file (ready for social / print)
-              </li>
-              <li class="flex gap-3">
-                <span class="mt-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-white/70"></span>
-                Clean composition + professional lighting
-              </li>
-              <li class="flex gap-3">
-                <span class="mt-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-white/70"></span>
-                Revisions (count depends on package)
-              </li>
-              <li class="flex gap-3">
-                <span class="mt-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-white/70"></span>
-                Commercial usage available (optional)
-              </li>
-            </ul>
-          </div>
-
-          <div class="rounded-3xl border border-white/12 bg-white/5 p-7">
-            <h2 class="text-xl font-black uppercase tracking-[0.22em]">Best results if you include</h2>
-            <ul class="mt-5 space-y-3 text-sm text-white/75">
-              <li class="flex gap-3">
-                <span class="mt-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-white/70"></span>
-                Reference images (face / outfit / mood)
-              </li>
-              <li class="flex gap-3">
-                <span class="mt-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-white/70"></span>
-                Background preference (simple / cinematic / detailed)
-              </li>
-              <li class="flex gap-3">
-                <span class="mt-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-white/70"></span>
-                Deadline (if any) + intended use (avatar / poster / gift)
-              </li>
-              <li class="flex gap-3">
-                <span class="mt-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-white/70"></span>
-                Your budget range (helps pick the right package)
-              </li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <!-- PACKAGES (placeholder, you can edit later) -->
-      <section class="mt-14">
-        <div class="flex items-end justify-between gap-6">
-          <h2 class="text-xl font-black uppercase tracking-[0.22em]">Packages</h2>
+      <!-- PACKAGES aligned with your screenshot -->
+      <section class="mt-14 text-center">
+        <div class="flex flex-col items-center justify-between gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <h2 class="text-xl font-black uppercase tracking-[0.22em]">Packs</h2>
           <div class="text-xs uppercase tracking-[0.22em] text-white/55">
-            Prices can vary by complexity
+            Price varies by complexity
           </div>
         </div>
 
-        <div class="mt-6 grid gap-4 lg:grid-cols-3">
+        <div class="mt-6 grid gap-4 lg:grid-cols-3 text-left">
           <div class="rounded-3xl border border-white/12 bg-white/5 p-7">
-            <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">Basic</div>
-            <div class="mt-3 text-2xl font-black">Portrait</div>
-            <p class="mt-2 text-sm text-white/70">Perfect for profile pictures.</p>
-            <div class="mt-6 text-sm text-white/75">
-              • 1 character<br />
-              • Simple background<br />
-              • 1 revision
+            <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">Classic Pack</div>
+            <div class="mt-3 text-2xl font-black">20–50€</div>
+            <p class="mt-2 text-sm text-white/70">Clean and effective.</p>
+            <div class="mt-6 text-sm text-white/75 leading-6">
+              • Character cut<br />
+              • Hair / eyes / breath<br />
+              • Basic limb motion<br />
+              • Clothes motion<br />
+              • Particles / subtle FX
             </div>
           </div>
 
           <div class="rounded-3xl border border-white/20 bg-white/8 p-7">
-            <div class="text-xs font-black uppercase tracking-[0.28em] text-white/70">Most popular</div>
-            <div class="mt-3 text-2xl font-black">Cinematic</div>
-            <p class="mt-2 text-sm text-white/70">More detail, more atmosphere.</p>
-            <div class="mt-6 text-sm text-white/80">
-              • 1–2 characters<br />
-              • Enhanced lighting<br />
-              • 2 revisions
+            <div class="text-xs font-black uppercase tracking-[0.28em] text-white/70">Favorite Pack</div>
+            <div class="mt-3 text-2xl font-black">70–120€</div>
+            <p class="mt-2 text-sm text-white/70">More detail, stronger impact.</p>
+            <div class="mt-6 text-sm text-white/80 leading-6">
+              • Everything in Classic<br />
+              • Detailed animations<br />
+              • High quality polish<br />
+              • Better FX layering
+            </div>
+
+            <div class="mt-6 rounded-2xl border border-white/12 bg-black/30 p-4 text-xs text-white/70">
+              Best choice for most Steam profiles.
             </div>
           </div>
 
           <div class="rounded-3xl border border-white/12 bg-white/5 p-7">
-            <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">Pro</div>
-            <div class="mt-3 text-2xl font-black">Full scene</div>
-            <p class="mt-2 text-sm text-white/70">Maximum detail & complexity.</p>
-            <div class="mt-6 text-sm text-white/75">
-              • Full background<br />
-              • Advanced effects<br />
-              • 3 revisions
+            <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">Ultimate Pack</div>
+            <div class="mt-3 text-2xl font-black">150€+</div>
+            <p class="mt-2 text-sm text-white/70">Maximum quality + advanced work.</p>
+            <div class="mt-6 text-sm text-white/75 leading-6">
+              • Best quality pipeline<br />
+              • 3D manipulation (if needed)<br />
+              • Complex FX / camera feeling<br />
+              • Animated desktop wallpaper (optional)
             </div>
           </div>
         </div>
 
-        <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+        <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <a
             href={ORDER_FORM_URL}
             target="_blank"
             rel="noreferrer"
-            class="inline-flex items-center justify-center rounded-2xl bg-white px-6 py-4 text-sm font-black uppercase tracking-[0.22em] text-black transition hover:scale-[1.02]"
+            class="inline-flex w-full items-center justify-center rounded-2xl bg-white px-6 py-4 text-sm font-black uppercase tracking-[0.22em] text-black transition hover:scale-[1.02] sm:w-auto"
           >
-            Start your order
+            Start order
           </a>
           <a
             href={INSTAGRAM_URL}
             target="_blank"
             rel="noreferrer"
-            class="inline-flex items-center justify-center rounded-2xl border border-white/20 bg-white/5 px-6 py-4 text-sm font-black uppercase tracking-[0.22em] text-white/90 transition hover:bg-white/10"
+            class="inline-flex w-full items-center justify-center rounded-2xl border border-white/20 bg-white/5 px-6 py-4 text-sm font-black uppercase tracking-[0.22em] text-white/90 transition hover:bg-white/10 sm:w-auto"
           >
             Ask a question (DM)
           </a>
         </div>
       </section>
 
-      <!-- FAQ -->
-      <section class="mt-16">
+      <!-- PAYMENT -->
+      <section class="mt-14 text-center">
+        <h2 class="text-xl font-black uppercase tracking-[0.22em]">Payment</h2>
+
+        <div class="mt-6 grid gap-4 lg:grid-cols-2 text-left">
+          <div class="rounded-3xl border border-white/12 bg-white/5 p-7">
+            <div class="text-sm font-black uppercase tracking-[0.20em] text-white/90">Standard</div>
+            <ul class="mt-4 space-y-2 text-sm text-white/70">
+              <li>• Wise (bank/card)</li>
+              <li>• PayPal</li>
+              <li>• Crypto</li>
+            </ul>
+          </div>
+
+          <div class="rounded-3xl border border-white/12 bg-white/5 p-7">
+            <div class="text-sm font-black uppercase tracking-[0.20em] text-white/90">Steam / skins</div>
+            <p class="mt-4 text-sm text-white/70">
+              If you pay with CS2 / TF2 / DOTA2 skins or Steam Gift Card, price is <span class="text-white/90 font-black">1.5x</span>
+              to match real market value.
+            </p>
+          </div>
+        </div>
+
+        <div class="mx-auto mt-6 max-w-4xl rounded-3xl border border-white/12 bg-white/5 p-7 text-left">
+          <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">Deposit</div>
+          <p class="mt-3 text-sm text-white/70">
+            To start work, I require a minimum of <span class="text-white/90 font-black">50% upfront</span>.
+            You can also pay the full amount upfront if you prefer.
+          </p>
+        </div>
+      </section>
+
+      <!-- OPTIONAL: PRICE PREVIEW -->
+      <section class="mt-14 text-center">
+        <div class="flex flex-col items-center justify-between gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <h2 class="text-xl font-black uppercase tracking-[0.22em]">Price preview</h2>
+          <div class="text-xs uppercase tracking-[0.22em] text-white/55">
+            (same as in the form)
+          </div>
+        </div>
+
+        <div class="mt-6 overflow-hidden rounded-3xl border border-white/12 bg-white/5">
+          <img
+            src={PRICE_PREVIEW_IMG}
+            alt="Steam animated artworks price list"
+            class="h-auto w-full object-cover"
+            loading="lazy"
+          />
+        </div>
+      </section>
+
+      <!-- FAQ (no stretch + chevron) -->
+      <section class="mt-16 text-center">
         <h2 class="text-xl font-black uppercase tracking-[0.22em]">FAQ</h2>
 
-        <div class="mt-6 grid gap-4 lg:grid-cols-2">
-          <details class="group rounded-3xl border border-white/12 bg-white/5 p-6">
-            <summary class="cursor-pointer list-none text-sm font-black uppercase tracking-[0.20em] text-white/90">
-              How long does it take?
+        <div class="mt-6 grid auto-rows-min items-start gap-4 lg:grid-cols-2 text-left">
+          <details class="group self-start rounded-3xl border border-white/12 bg-white/5 p-6">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-black uppercase tracking-[0.20em] text-white/90">
+              <span>What do you need from me?</span>
+              <span class="grid h-9 w-9 place-items-center rounded-full border border-white/12 bg-white/5 transition group-open:rotate-180">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" class="opacity-90">
+                  <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
             </summary>
             <p class="mt-3 text-sm text-white/70">
-              Depends on complexity and current queue. If you have a deadline, include it in the order form.
+              A Steam permalink + references (character/text/logo) + theme/background link (optional).
+              The form tells you exactly what to send.
             </p>
           </details>
 
-          <details class="group rounded-3xl border border-white/12 bg-white/5 p-6">
-            <summary class="cursor-pointer list-none text-sm font-black uppercase tracking-[0.20em] text-white/90">
-              Can I request revisions?
+          <details class="group self-start rounded-3xl border border-white/12 bg-white/5 p-6">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-black uppercase tracking-[0.20em] text-white/90">
+              <span>Why the over-budget checkbox?</span>
+              <span class="grid h-9 w-9 place-items-center rounded-full border border-white/12 bg-white/5 transition group-open:rotate-180">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" class="opacity-90">
+                  <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
             </summary>
             <p class="mt-3 text-sm text-white/70">
-              Yes. Revision count depends on the package. Major changes after approval may cost extra.
+              Sometimes assets need extra cleanup or complexity grows. You confirm first — no surprises.
             </p>
           </details>
 
-          <details class="group rounded-3xl border border-white/12 bg-white/5 p-6">
-            <summary class="cursor-pointer list-none text-sm font-black uppercase tracking-[0.20em] text-white/90">
-              Do you offer commercial usage?
+          <details class="group self-start rounded-3xl border border-white/12 bg-white/5 p-6">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-black uppercase tracking-[0.20em] text-white/90">
+              <span>Can you match my Steam theme?</span>
+              <span class="grid h-9 w-9 place-items-center rounded-full border border-white/12 bg-white/5 transition group-open:rotate-180">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" class="opacity-90">
+                  <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
             </summary>
             <p class="mt-3 text-sm text-white/70">
-              Commercial licensing is available. Mention your intended usage in the form.
+              Yes — drop your theme/background link. I’ll match palette and contrast for a cohesive profile.
             </p>
           </details>
 
-          <details class="group rounded-3xl border border-white/12 bg-white/5 p-6">
-            <summary class="cursor-pointer list-none text-sm font-black uppercase tracking-[0.20em] text-white/90">
-              What files do I receive?
+          <details class="group self-start rounded-3xl border border-white/12 bg-white/5 p-6">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-black uppercase tracking-[0.20em] text-white/90">
+              <span>How fast is delivery?</span>
+              <span class="grid h-9 w-9 place-items-center rounded-full border border-white/12 bg-white/5 transition group-open:rotate-180">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" class="opacity-90">
+                  <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
             </summary>
             <p class="mt-3 text-sm text-white/70">
-              High-resolution final export (format depends on the project). Print-ready options available.
+              Depends on complexity + queue. If you have a deadline, include it in the form and I’ll confirm availability.
             </p>
           </details>
         </div>
@@ -253,11 +322,11 @@ const EMAIL = "hello@vdanimation.com";
       <!-- FOOTER CTA -->
       <section class="mt-16 rounded-3xl border border-white/12 bg-white/5 p-8">
         <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-          <div>
+          <div class="text-left">
             <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">Ready?</div>
-            <div class="mt-2 text-2xl font-black">Let’s create something iconic.</div>
+            <div class="mt-2 text-2xl font-black">Make your Steam profile iconic.</div>
             <div class="mt-2 text-sm text-white/70">
-              Fill the form — I’ll reply with availability and next steps.
+              Fill the form — I’ll reply with availability + next steps.
             </div>
           </div>
 
@@ -265,12 +334,34 @@ const EMAIL = "hello@vdanimation.com";
             href={ORDER_FORM_URL}
             target="_blank"
             rel="noreferrer"
-            class="inline-flex items-center justify-center rounded-2xl bg-white px-6 py-4 text-sm font-black uppercase tracking-[0.22em] text-black transition hover:scale-[1.02]"
+            class="inline-flex w-full items-center justify-center rounded-2xl bg-white px-6 py-4 text-sm font-black uppercase tracking-[0.22em] text-black transition hover:scale-[1.02] sm:w-auto"
           >
-            Start your order
+            Start order
           </a>
         </div>
       </section>
+    </div>
+
+    <!-- Sticky mobile CTA -->
+    <div class="fixed inset-x-0 bottom-4 z-50 mx-auto w-[min(680px,calc(100%-2rem))] px-2 sm:hidden">
+      <div class="flex gap-3 rounded-2xl border border-white/12 bg-black/70 p-2 backdrop-blur">
+        <a
+          href={ORDER_FORM_URL}
+          target="_blank"
+          rel="noreferrer"
+          class="flex-1 rounded-xl bg-white px-4 py-3 text-center text-xs font-black uppercase tracking-[0.22em] text-black"
+        >
+          Start order
+        </a>
+        <a
+          href={INSTAGRAM_URL}
+          target="_blank"
+          rel="noreferrer"
+          class="rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-xs font-black uppercase tracking-[0.22em] text-white/90"
+        >
+          DM
+        </a>
+      </div>
     </div>
   </main>
 </Layout>

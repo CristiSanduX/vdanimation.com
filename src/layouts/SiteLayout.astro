@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 const { title = "VD ANIMATION" } = Astro.props;
+import Footer from "../components/ui/Footer.astro";
 ---
 
 <html lang="en">
@@ -11,5 +12,6 @@ const { title = "VD ANIMATION" } = Astro.props;
   </head>
   <body class="min-h-screen bg-black text-white">
     <slot />
+    <Footer />
   </body>
 </html>
