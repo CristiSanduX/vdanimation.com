@@ -3,7 +3,7 @@
 // ✅ keeps poster + video layer
 // ✅ avoids first-load lag: no preload auto + no load() on mount
 // ✅ lazy attach src only when active
-// ✅ tighter title tracking (premium)
+// ✅ supports mobile "focal" (top/center) so posters show higher framing
 
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
@@ -21,14 +21,20 @@ export default function VideoPane({
   active,
   dim, // kept for API compatibility but ignored (no darkening)
   showTitle = true,
+  focal = "center",
 }: {
   item: VideoPaneItem;
   active: boolean;
   dim: boolean;
   showTitle?: boolean;
+  focal?: "center" | "top";
 }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const videoWrapRef = useRef<HTMLDivElement | null>(null);
+
+  // ✅ “see more from above” on mobile (or whenever you pass focal="top")
+  // top variant is slightly lifted: 50% 15%
+  const objectPosClass = focal === "top" ? "object-[50%_15%]" : "object-center";
 
   const ensureSourcesAttached = () => {
     const video = videoRef.current;
@@ -97,9 +103,7 @@ export default function VideoPane({
         return;
       }
 
-      const onPlaying = () => {
-        fadeTo(1);
-      };
+      const onPlaying = () => fadeTo(1);
       video.addEventListener("playing", onPlaying, { once: true });
     };
 
@@ -149,6 +153,7 @@ export default function VideoPane({
         alt={item.title}
         className={[
           "absolute inset-0 h-full w-full object-cover",
+          objectPosClass,
           "[transform:translateZ(0)] [backface-visibility:hidden]",
         ].join(" ")}
         draggable={false}
@@ -170,6 +175,7 @@ export default function VideoPane({
           ref={videoRef}
           className={[
             "h-full w-full object-cover",
+            objectPosClass,
             "[transform:translateZ(0)] [backface-visibility:hidden]",
           ].join(" ")}
           muted
@@ -188,7 +194,6 @@ export default function VideoPane({
               "hero-gotham",
               "text-center font-black uppercase whitespace-nowrap leading-none",
               "text-2xl sm:text-4xl lg:text-5xl",
-              // ✅ tighter than before (was 0.16/0.22)
               "tracking-tighter sm:tracking-tight",
               "[text-shadow:0_10px_30px_rgba(0,0,0,0.35)]",
               "transition-all duration-300",

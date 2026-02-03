@@ -42,8 +42,10 @@ export default function HeroTriSplit() {
     setIsTouch(isTouchDevice());
   }, []);
 
-  // GSAP flex-grow animation
+  // GSAP flex-grow animation (desktop only)
   useEffect(() => {
+    if (isTouch) return;
+
     const panes = paneRefs.current.filter(Boolean) as HTMLDivElement[];
     if (panes.length !== items.length) return;
 
@@ -66,7 +68,7 @@ export default function HeroTriSplit() {
         overwrite: "auto",
       });
     });
-  }, [activeIndex, items.length]);
+  }, [activeIndex, items.length, isTouch]);
 
   const navigateTo = (href: string) => {
     if (typeof window === "undefined") return;
@@ -85,25 +87,12 @@ export default function HeroTriSplit() {
 
   const onClickPane = (i: number) => {
     const key = items[i]?.key;
-
-    // ✅ Desktop: navigate for all categories
-    if (!isTouch) {
-      if (key === "anime") return navigateTo("/anime");
-      if (key === "cinematic") return navigateTo("/cinematic");
-      if (key === "fantasy") return navigateTo("/fantasy");
-      return;
-    }
-
-    // ✅ Touch: recommended behavior = navigate as well (simple + consistent)
     if (key === "anime") return navigateTo("/anime");
     if (key === "cinematic") return navigateTo("/cinematic");
     if (key === "fantasy") return navigateTo("/fantasy");
 
-    // If you *really* want modal on touch for Fantasy instead:
-    // if (key === "fantasy") {
-    //   setModalIndex(i);
-    //   return;
-    // }
+    // (fallback) touch modal if you ever add a non-route pane
+    if (isTouch) setModalIndex(i);
   };
 
   const onKeyDownPane = (e: React.KeyboardEvent, i: number) => {
@@ -117,12 +106,20 @@ export default function HeroTriSplit() {
   return (
     <>
       <div
-        className="relative flex h-full w-full overflow-hidden"
+        className={[
+          // ✅ mobile stack, desktop row
+          "relative flex w-full overflow-hidden",
+          "flex-col md:flex-row",
+
+          // ✅ mobile: spacing + padding like “stack cards”
+          "gap-3 px-3 py-3 md:gap-0 md:px-0 md:py-0",
+
+          // ✅ IMPORTANT: fill parent height so 3 panes can split perfectly on mobile
+          "h-full",
+        ].join(" ")}
         onMouseLeave={onLeave}
       >
         {items.map((item, i) => {
-          const clickable = true;
-
           return (
             <div
               key={item.key}
@@ -130,8 +127,18 @@ export default function HeroTriSplit() {
                 paneRefs.current[i] = el;
               }}
               className={[
-                "relative flex min-w-0 flex-1 outline-none",
-                clickable ? "cursor-pointer" : "cursor-default",
+                "relative outline-none cursor-pointer",
+                "overflow-hidden",
+
+                // ✅ MOBILE: each pane takes 1/3 of available height
+                "w-full flex-1 min-h-0",
+
+                // ✅ DESKTOP: tri-split
+                "md:flex md:min-w-0 md:flex-1 md:h-auto",
+
+                // ✅ mobile styling
+                "rounded-2xl md:rounded-none",
+                "shadow-[0_20px_80px_rgba(0,0,0,0.55)] md:shadow-none",
               ].join(" ")}
               style={{ flexGrow: 1 }}
               onMouseEnter={() => onEnter(i)}
@@ -149,17 +156,21 @@ export default function HeroTriSplit() {
                   active={!isTouch && activeIndex === i}
                   dim={!isTouch && activeIndex !== null && activeIndex !== i}
                   showTitle
+                  focal="top"
                 />
               </div>
+
+              {/* extra mobile polish: subtle bottom bar behind title */}
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/60 via-black/10 to-transparent md:hidden" />
             </div>
           );
         })}
 
-        {/* separators */}
-        <div className="pointer-events-none absolute inset-y-0 left-1/3 z-40 w-12 -translate-x-1/2">
+        {/* separators — ONLY desktop */}
+        <div className="pointer-events-none absolute inset-y-0 left-1/3 z-40 w-12 -translate-x-1/2 hidden md:block">
           <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-transparent blur-2xl" />
         </div>
-        <div className="pointer-events-none absolute inset-y-0 left-2/3 z-40 w-12 -translate-x-1/2">
+        <div className="pointer-events-none absolute inset-y-0 left-2/3 z-40 w-12 -translate-x-1/2 hidden md:block">
           <div className="absolute inset-0 bg-gradient-to-l from-black/85 via-black/45 to-transparent blur-2xl" />
         </div>
 
@@ -167,7 +178,7 @@ export default function HeroTriSplit() {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0)_0%,rgba(0,0,0,0.55)_72%,rgba(0,0,0,0.88)_100%)]" />
       </div>
 
-      {/* touch modal (only if you enable modal behavior above) */}
+      {/* touch modal (fallback) */}
       <FullscreenPreviewModal
         open={modalItem !== null}
         title={modalItem?.title ?? ""}

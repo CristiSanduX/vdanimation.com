@@ -7,7 +7,14 @@ import HeroTriSplit from "../components/hero/HeroTriSplit";
 <Layout title="VD Animation">
   <TopNav brand="VD ANIMATION" />
 
-  <main class="relative h-screen w-screen overflow-hidden hero-gotham">
+  <main
+    class="
+      relative w-screen overflow-hidden hero-gotham
+      pt-[calc(env(safe-area-inset-top)+88px)]
+      sm:pt-0
+      h-screen
+    "
+  >
     <HeroTriSplit client:idle />
   </main>
 </Layout>

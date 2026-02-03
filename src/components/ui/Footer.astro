@@ -7,19 +7,27 @@ const LINKS = [
   { href: "mailto:hello@vdanimation.com", label: "Contact" },
 ];
 
-const BUILT_BY_URL = "https://csx.ro"; // schimbă dacă ai alt link
+const BUILT_BY_URL = "https://csx.ro";
 const BUILT_BY_LABEL = "Built by CSX";
-const BUILT_BY_LOGO = "/logo/csx.png"; // optional: pune un svg/png mic
+const BUILT_BY_LOGO = "/logo/csx.png";
 ---
 
 <footer class="relative mt-24 border-t border-white/10 bg-black text-white">
   <div class="mx-auto max-w-7xl px-6 py-10">
-    <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+    <div
+      class="
+        flex flex-col gap-6
+        items-center text-center
+        sm:flex-row sm:items-center sm:justify-between sm:text-left
+      "
+    >
+      {/* © */}
       <div class="text-xs uppercase tracking-[0.22em] text-white/60">
-        © {YEAR} VD Animation. All rights reserved.
+        © {YEAR} VDA Animation. All rights reserved.
       </div>
 
-      <nav class="flex flex-wrap gap-x-6 gap-y-3">
+      {/* links */}
+      <nav class="flex flex-wrap justify-center gap-x-6 gap-y-3 sm:justify-start">
         {LINKS.map((l) => (
           <a
             href={l.href}
@@ -30,11 +38,16 @@ const BUILT_BY_LOGO = "/logo/csx.png"; // optional: pune un svg/png mic
         ))}
       </nav>
 
+      {/* built by */}
       <a
         href={BUILT_BY_URL}
         target="_blank"
         rel="noreferrer"
-        class="group inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.22em] text-white/45 transition hover:text-white/70"
+        class="
+          group inline-flex items-center gap-2
+          text-xs font-black uppercase tracking-[0.22em]
+          text-white/45 transition hover:text-white/70
+        "
         aria-label={BUILT_BY_LABEL}
       >
         {BUILT_BY_LOGO ? (
