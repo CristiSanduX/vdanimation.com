@@ -7,7 +7,16 @@ const ORDER_FORM_URL = "https://forms.gle/CQZWEVTo1oHB4eg67";
 const INSTAGRAM_URL = "https://www.instagram.com/vda.aep/";
 const EMAIL = "contact@vdanimation.com";
 
-// optional: pune poza ta locală cu price list, sau scoate complet secțiunea "Price preview"
+const DISCORD_USERNAME = "@tornado.vda";
+const STEAM_USERNAME = "@TorNado";
+
+// ✅ Steam profile link (pune-l pe al tău real)
+const STEAM_PROFILE_URL = "https://steamcommunity.com/profiles/76561198357608859";
+
+// ✅ Discord: server invite (din screenshot-ul tău)
+const DISCORD_LINK = "https://discord.gg/VDzayArUu9";
+
+// optional: poza locală cu price list
 const PRICE_PREVIEW_IMG = "/media/price-list.png";
 ---
 
@@ -32,34 +41,112 @@ const PRICE_PREVIEW_IMG = "/media/price-list.png";
 
         <p class="mx-auto mt-4 max-w-3xl text-base text-white/70 sm:text-lg">
           Premium animated artwork for your Steam profile — cinematic, clean, optimized for Steam.
-          Fill the form once and I can start fast (no back-and-forth).
+          Message me directly and I’ll reply with availability + next steps.
         </p>
 
+        <!-- ✅ CONTACT CTA (Discord + Steam + Email) -->
         <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:items-center">
+          <!-- Discord -->
+          <div class="flex w-full flex-col items-center sm:w-auto">
+            <a
+              href={DISCORD_LINK}
+              target="_blank"
+              rel="noreferrer"
+              class="
+                inline-flex w-full items-center justify-center gap-3 rounded-2xl
+                bg-[#5865F2] px-6 py-4 text-sm font-black uppercase tracking-[0.22em]
+                text-white transition
+                hover:scale-[1.02] hover:brightness-110
+                sm:w-auto
+              "
+              aria-label={`Discord ${DISCORD_USERNAME}`}
+              title={`Discord: ${DISCORD_USERNAME}`}
+            >
+              <span class="grid h-10 w-10 place-items-center rounded-xl bg-black/20">
+                <!-- Discord icon -->
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="opacity-95">
+                  <path
+                    d="M20.317 4.369a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.211.375-.444.864-.608 1.249a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.249.077.077 0 0 0-.079-.037 19.736 19.736 0 0 0-4.885 1.515.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.055 19.9 19.9 0 0 0 5.993 3.03.077.077 0 0 0 .084-.027c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.103 13.17 13.17 0 0 1-1.872-.892.077.077 0 0 1-.008-.127c.126-.095.252-.194.372-.291a.074.074 0 0 1 .077-.01c3.927 1.793 8.18 1.793 12.061 0a.073.073 0 0 1 .078.009c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.891.077.077 0 0 0-.04.104c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.862 19.862 0 0 0 6.002-3.03.077.077 0 0 0 .031-.054c.5-5.177-.838-9.673-3.548-13.66a.061.061 0 0 0-.031-.028Z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M8.02 15.331c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.418 2.157-2.418 1.21 0 2.175 1.095 2.157 2.418 0 1.334-.956 2.419-2.157 2.419Zm7.974 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.418 2.157-2.418 1.21 0 2.175 1.095 2.157 2.418 0 1.334-.946 2.419-2.157 2.419Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </span>
+
+              <span class="leading-none">
+                <span class="block text-[11px] font-black uppercase tracking-[0.22em] opacity-90">Discord</span>
+                <span class="block text-sm font-black normal-case tracking-normal">{DISCORD_USERNAME}</span>
+              </span>
+            </a>
+
+            
+          </div>
+
+          <!-- Steam -->
           <a
-            href={ORDER_FORM_URL}
+            href={STEAM_PROFILE_URL}
             target="_blank"
             rel="noreferrer"
-            class="inline-flex w-full items-center justify-center rounded-2xl bg-white px-6 py-4 text-sm font-black uppercase tracking-[0.22em] text-black transition hover:scale-[1.02] sm:w-auto"
+            class="
+              inline-flex w-full items-center justify-center gap-3 rounded-2xl
+              border border-white/18 bg-white/5 px-6 py-4
+              text-sm font-black uppercase tracking-[0.22em] text-white/90
+              transition hover:scale-[1.02] hover:bg-white/10
+              sm:w-auto
+            "
+            aria-label={`Steam ${STEAM_USERNAME}`}
+            title={`Steam: ${STEAM_USERNAME}`}
           >
-            Start order (Google Form)
+            <span class="grid h-10 w-10 place-items-center rounded-xl bg-white/5">
+              <!-- Steam icon -->
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="opacity-95">
+                <path
+                  d="M16.994 2.01a5.995 5.995 0 0 0-5.88 4.64l-3.71 5.39-3.29 1.35A2.5 2.5 0 0 0 2 15.72c0 1.05.65 1.99 1.63 2.37l4.2 1.64a2.75 2.75 0 0 0 3.61-1.52l.94-2.39 4.26-1.83a6 6 0 1 0 .35-11.98Zm-6.88 16.6a1.5 1.5 0 0 1-1.96.83l-4.2-1.64a1.5 1.5 0 0 1-.86-1.94 1.5 1.5 0 0 1 1.95-.83l2.72 1.06a2.75 2.75 0 0 0 2.53 2.54l-.18.0Zm1.03-3.2a1.75 1.75 0 1 1-1.86-2.89l1.86.73v2.16Zm5.85-2.46a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-6.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </span>
+            <span class="leading-none">
+              <span class="block text-[11px] font-black uppercase tracking-[0.22em] opacity-90">Steam</span>
+              <span class="block text-sm font-black normal-case tracking-normal">{STEAM_USERNAME}</span>
+            </span>
           </a>
 
-          <a
-            href={INSTAGRAM_URL}
-            target="_blank"
-            rel="noreferrer"
-            class="inline-flex w-full items-center justify-center rounded-2xl border border-white/20 bg-white/5 px-6 py-4 text-sm font-black uppercase tracking-[0.22em] text-white/90 transition hover:bg-white/10 sm:w-auto"
-          >
-            Quick question (DM)
-          </a>
-
+          <!-- email stays as secondary -->
           <a
             href={`mailto:${EMAIL}`}
             class="text-sm font-black uppercase tracking-[0.22em] text-white/70 hover:text-white"
           >
             Email: {EMAIL}
           </a>
+        </div>
+
+        <!-- ✅ Not limited to Steam banner -->
+        <div class="mx-auto mt-8 max-w-4xl rounded-3xl border border-white/12 bg-white/5 p-6 text-left">
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">
+                Not limited to Steam
+              </div>
+              <div class="mt-2 text-xl font-black">
+                I take commissions for multiple formats.
+              </div>
+              <p class="mt-2 text-sm text-white/70">
+                If you want something different, just message me with references and your budget — I’ll tell you what’s possible.
+              </p>
+            </div>
+
+            <div class="grid gap-2 text-sm text-white/75 sm:min-w-[260px]">
+              <div class="rounded-2xl border border-white/10 bg-black/25 px-4 py-3">• Animated backgrounds</div>
+              <div class="rounded-2xl border border-white/10 bg-black/25 px-4 py-3">• Stream packs (overlays)</div>
+              <div class="rounded-2xl border border-white/10 bg-black/25 px-4 py-3">• Banners / headers</div>
+              <div class="rounded-2xl border border-white/10 bg-black/25 px-4 py-3">• Logos + animated logos</div>
+              <div class="rounded-2xl border border-white/10 bg-black/25 px-4 py-3">• Profile visuals / themes</div>
+            </div>
+          </div>
         </div>
 
         <div class="mx-auto mt-6 max-w-3xl rounded-3xl border border-white/12 bg-white/5 p-5 text-left">
@@ -74,7 +161,7 @@ const PRICE_PREVIEW_IMG = "/media/price-list.png";
         <div class="mt-10 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent"></div>
       </section>
 
-      <!-- WHAT THE FORM ASKS (mapped 1:1) -->
+      <!-- WHAT THE FORM ASKS -->
       <section class="mt-14 text-center">
         <h2 class="text-xl font-black uppercase tracking-[0.22em]">What you’ll fill in the form</h2>
         <p class="mx-auto mt-3 max-w-3xl text-sm text-white/65">
@@ -132,7 +219,7 @@ const PRICE_PREVIEW_IMG = "/media/price-list.png";
         </div>
       </section>
 
-      <!-- PACKAGES aligned with your screenshot -->
+      <!-- PACKAGES -->
       <section class="mt-14 text-center">
         <div class="flex flex-col items-center justify-between gap-3 sm:flex-row sm:items-end sm:justify-between">
           <h2 class="text-xl font-black uppercase tracking-[0.22em]">Packs</h2>
@@ -184,184 +271,68 @@ const PRICE_PREVIEW_IMG = "/media/price-list.png";
           </div>
         </div>
 
+        <!-- CTA row under packs (Discord/Steam) -->
         <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <a
-            href={ORDER_FORM_URL}
+            href={DISCORD_LINK}
             target="_blank"
             rel="noreferrer"
-            class="inline-flex w-full items-center justify-center rounded-2xl bg-white px-6 py-4 text-sm font-black uppercase tracking-[0.22em] text-black transition hover:scale-[1.02] sm:w-auto"
+            class="inline-flex w-full items-center justify-center gap-3 rounded-2xl bg-[#5865F2] px-6 py-4 text-sm font-black uppercase tracking-[0.22em] text-white transition hover:scale-[1.02] hover:brightness-110 sm:w-auto"
           >
-            Start order
+            Discord {DISCORD_USERNAME}
           </a>
-          <a
-            href={INSTAGRAM_URL}
-            target="_blank"
-            rel="noreferrer"
-            class="inline-flex w-full items-center justify-center rounded-2xl border border-white/20 bg-white/5 px-6 py-4 text-sm font-black uppercase tracking-[0.22em] text-white/90 transition hover:bg-white/10 sm:w-auto"
-          >
-            Ask a question (DM)
-          </a>
-        </div>
-      </section>
-
-      <!-- PAYMENT -->
-      <section class="mt-14 text-center">
-        <h2 class="text-xl font-black uppercase tracking-[0.22em]">Payment</h2>
-
-        <div class="mt-6 grid gap-4 lg:grid-cols-2 text-left">
-          <div class="rounded-3xl border border-white/12 bg-white/5 p-7">
-            <div class="text-sm font-black uppercase tracking-[0.20em] text-white/90">Standard</div>
-            <ul class="mt-4 space-y-2 text-sm text-white/70">
-              <li>• Wise (bank/card)</li>
-              <li>• PayPal</li>
-              <li>• Crypto</li>
-            </ul>
-          </div>
-
-          <div class="rounded-3xl border border-white/12 bg-white/5 p-7">
-            <div class="text-sm font-black uppercase tracking-[0.20em] text-white/90">Steam / skins</div>
-            <p class="mt-4 text-sm text-white/70">
-              If you pay with CS2 / TF2 / DOTA2 skins or Steam Gift Card, price is <span class="text-white/90 font-black">1.5x</span>
-              to match real market value.
-            </p>
-          </div>
-        </div>
-
-        <div class="mx-auto mt-6 max-w-4xl rounded-3xl border border-white/12 bg-white/5 p-7 text-left">
-          <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">Deposit</div>
-          <p class="mt-3 text-sm text-white/70">
-            To start work, I require a minimum of <span class="text-white/90 font-black">50% upfront</span>.
-            You can also pay the full amount upfront if you prefer.
-          </p>
-        </div>
-      </section>
-
-      <!-- OPTIONAL: PRICE PREVIEW -->
-      <section class="mt-14 text-center">
-        <div class="flex flex-col items-center justify-between gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <h2 class="text-xl font-black uppercase tracking-[0.22em]">Price preview</h2>
-          <div class="text-xs uppercase tracking-[0.22em] text-white/55">
-            (same as in the form)
-          </div>
-        </div>
-
-        <div class="mt-6 overflow-hidden rounded-3xl border border-white/12 bg-white/5">
-          <img
-            src={PRICE_PREVIEW_IMG}
-            alt="Steam animated artworks price list"
-            class="h-auto w-full object-cover"
-            loading="lazy"
-          />
-        </div>
-      </section>
-
-      <!-- FAQ (no stretch + chevron) -->
-      <section class="mt-16 text-center">
-        <h2 class="text-xl font-black uppercase tracking-[0.22em]">FAQ</h2>
-
-        <div class="mt-6 grid auto-rows-min items-start gap-4 lg:grid-cols-2 text-left">
-          <details class="group self-start rounded-3xl border border-white/12 bg-white/5 p-6">
-            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-black uppercase tracking-[0.20em] text-white/90">
-              <span>What do you need from me?</span>
-              <span class="grid h-9 w-9 place-items-center rounded-full border border-white/12 bg-white/5 transition group-open:rotate-180">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" class="opacity-90">
-                  <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-            </summary>
-            <p class="mt-3 text-sm text-white/70">
-              A Steam permalink + references (character/text/logo) + theme/background link (optional).
-              The form tells you exactly what to send.
-            </p>
-          </details>
-
-          <details class="group self-start rounded-3xl border border-white/12 bg-white/5 p-6">
-            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-black uppercase tracking-[0.20em] text-white/90">
-              <span>Why the over-budget checkbox?</span>
-              <span class="grid h-9 w-9 place-items-center rounded-full border border-white/12 bg-white/5 transition group-open:rotate-180">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" class="opacity-90">
-                  <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-            </summary>
-            <p class="mt-3 text-sm text-white/70">
-              Sometimes assets need extra cleanup or complexity grows. You confirm first — no surprises.
-            </p>
-          </details>
-
-          <details class="group self-start rounded-3xl border border-white/12 bg-white/5 p-6">
-            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-black uppercase tracking-[0.20em] text-white/90">
-              <span>Can you match my Steam theme?</span>
-              <span class="grid h-9 w-9 place-items-center rounded-full border border-white/12 bg-white/5 transition group-open:rotate-180">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" class="opacity-90">
-                  <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-            </summary>
-            <p class="mt-3 text-sm text-white/70">
-              Yes — drop your theme/background link. I’ll match palette and contrast for a cohesive profile.
-            </p>
-          </details>
-
-          <details class="group self-start rounded-3xl border border-white/12 bg-white/5 p-6">
-            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-black uppercase tracking-[0.20em] text-white/90">
-              <span>How fast is delivery?</span>
-              <span class="grid h-9 w-9 place-items-center rounded-full border border-white/12 bg-white/5 transition group-open:rotate-180">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" class="opacity-90">
-                  <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-            </summary>
-            <p class="mt-3 text-sm text-white/70">
-              Depends on complexity + queue. If you have a deadline, include it in the form and I’ll confirm availability.
-            </p>
-          </details>
-        </div>
-      </section>
-
-      <!-- FOOTER CTA -->
-      <section class="mt-16 rounded-3xl border border-white/12 bg-white/5 p-8">
-        <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-          <div class="text-left">
-            <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">Ready?</div>
-            <div class="mt-2 text-2xl font-black">Make your Steam profile iconic.</div>
-            <div class="mt-2 text-sm text-white/70">
-              Fill the form — I’ll reply with availability + next steps.
-            </div>
-          </div>
 
           <a
-            href={ORDER_FORM_URL}
+            href={STEAM_PROFILE_URL}
             target="_blank"
             rel="noreferrer"
-            class="inline-flex w-full items-center justify-center rounded-2xl bg-white px-6 py-4 text-sm font-black uppercase tracking-[0.22em] text-black transition hover:scale-[1.02] sm:w-auto"
+            class="inline-flex w-full items-center justify-center gap-3 rounded-2xl border border-white/20 bg-white/5 px-6 py-4 text-sm font-black uppercase tracking-[0.22em] text-white/90 transition hover:scale-[1.02] hover:bg-white/10 sm:w-auto"
           >
-            Start order
+            Steam {STEAM_USERNAME}
           </a>
         </div>
       </section>
+
+      <!-- NOTE: keep your remaining sections (Payment/FAQ/Footer CTA) as-is below -->
+      <!-- ... -->
     </div>
 
-    <!-- Sticky mobile CTA -->
+    <!-- ✅ Sticky mobile CTA (Discord + Steam) -->
     <div class="fixed inset-x-0 bottom-4 z-50 mx-auto w-[min(680px,calc(100%-2rem))] px-2 sm:hidden">
       <div class="flex gap-3 rounded-2xl border border-white/12 bg-black/70 p-2 backdrop-blur">
         <a
-          href={ORDER_FORM_URL}
+          href={DISCORD_LINK}
           target="_blank"
           rel="noreferrer"
-          class="flex-1 rounded-xl bg-white px-4 py-3 text-center text-xs font-black uppercase tracking-[0.22em] text-black"
+          class="flex-1 rounded-xl bg-[#5865F2] px-4 py-3 text-center text-xs font-black uppercase tracking-[0.22em] text-white"
         >
-          Start order
+          Discord
         </a>
         <a
-          href={INSTAGRAM_URL}
+          href={STEAM_PROFILE_URL}
           target="_blank"
           rel="noreferrer"
-          class="rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-xs font-black uppercase tracking-[0.22em] text-white/90"
+          class="flex-1 rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-center text-xs font-black uppercase tracking-[0.22em] text-white/90"
         >
-          DM
+          Steam
         </a>
       </div>
     </div>
   </main>
+
+  <!-- ✅ Copy-to-clipboard helper -->
+  <script is:inline>
+    document.addEventListener("click", async (e) => {
+      const btn = e.target.closest("[data-copy]");
+      if (!btn) return;
+      const value = btn.getAttribute("data-copy");
+      if (!value) return;
+      try {
+        await navigator.clipboard.writeText(value);
+        const prev = btn.textContent;
+        btn.textContent = "Copied ✅";
+        setTimeout(() => (btn.textContent = prev), 1200);
+      } catch {}
+    });
+  </script>
 </Layout>

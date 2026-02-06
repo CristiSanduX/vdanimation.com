@@ -192,9 +192,10 @@ export default function VideoPane({
           <div
             className={[
               "hero-gotham",
+              "[letter-spacing:0]",
               "text-center font-black uppercase whitespace-nowrap leading-none",
               "text-2xl sm:text-4xl lg:text-5xl",
-              "tracking-tighter sm:tracking-tight",
+"!tracking-normal",
               "[text-shadow:0_10px_30px_rgba(0,0,0,0.35)]",
               "transition-all duration-300",
               active ? "opacity-100 scale-100" : "opacity-95 scale-[0.98]",

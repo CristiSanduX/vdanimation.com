@@ -15,6 +15,15 @@ import HeroTriSplit from "../components/hero/HeroTriSplit";
       h-screen
     "
   >
+    <!-- ✅ MOBILE ONLY: transition bridge (topnav -> hero) -->
+    <div class="pointer-events-none absolute left-0 right-0 top-0 z-30 sm:hidden">
+      <!-- black -> transparent fade -->
+      <div class="h-24 bg-gradient-to-b from-black via-black/70 to-transparent"></div>
+
+      <!-- optional: subtle violet tint so it blends nicer into Fantasy -->
+      <div class="-mt-12 h-28 bg-gradient-to-b from-violet-900/25 via-fuchsia-900/10 to-transparent blur-2xl"></div>
+    </div>
+
     <HeroTriSplit client:idle />
   </main>
 </Layout>

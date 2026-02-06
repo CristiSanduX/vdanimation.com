@@ -1,6 +1,8 @@
-// FantasyGrid.tsx — clean gallery (NO cards/borders/rounding) + "ghost backdrop"
-// ✅ identical perf model to CinematicGrid / AnimeGrid
-// ✅ tuned for FANTASY content
+// FantasyGrid.tsx — clean gallery + ghost backdrop
+// ✅ 4-per-row on desktop
+// ✅ tighter gaps + bigger feel
+// ✅ WOW hover: active expands, lifts, glows; others dim + shrink slightly
+// ✅ keeps perf model (lazy src + MAX_PLAYING)
 
 import React, { useEffect, useRef, useState } from "react";
 import FullscreenPreviewModal from "../ui/FullscreenPreviewModal";
@@ -28,11 +30,17 @@ function FantasyItem({
   onOpen,
   isTouch,
   controller,
+  dimmed,
+  focused,
+  onHoverChange,
 }: {
   item: FantasyWork;
   onOpen: (item: FantasyWork) => void;
   isTouch: boolean;
   controller: PlaybackController;
+  dimmed: boolean;
+  focused: boolean;
+  onHoverChange: (id: string | null) => void;
 }) {
   const wrapRef = useRef<HTMLButtonElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -48,7 +56,7 @@ function FantasyItem({
     } catch {}
   }, []);
 
-  // Desktop hover
+  // Desktop hover play + focus state
   useEffect(() => {
     if (isTouch) return;
 
@@ -56,8 +64,14 @@ function FantasyItem({
     const v = videoRef.current;
     if (!el || !v) return;
 
-    const onEnter = () => controller.requestPlay(v);
-    const onLeave = () => controller.release(v);
+    const onEnter = () => {
+      onHoverChange(item.id);
+      controller.requestPlay(v);
+    };
+    const onLeave = () => {
+      onHoverChange(null);
+      controller.release(v);
+    };
 
     el.addEventListener("mouseenter", onEnter);
     el.addEventListener("mouseleave", onLeave);
@@ -66,9 +80,9 @@ function FantasyItem({
       el.removeEventListener("mouseenter", onEnter);
       el.removeEventListener("mouseleave", onLeave);
     };
-  }, [isTouch, controller]);
+  }, [isTouch, controller, item.id, onHoverChange]);
 
-  // Mobile autoplay via IO
+  // Mobile autoplay via IO (no dim/focus)
   useEffect(() => {
     if (!isTouch) return;
 
@@ -102,12 +116,47 @@ function FantasyItem({
       onClick={() => onOpen(item)}
       className={[
         "group relative block w-full outline-none",
-        "overflow-hidden",
+        "overflow-visible", // allow glow/expand
         isTouch ? "cursor-pointer" : "cursor-zoom-in",
+
+        // other cards dim when something is hovered
+        dimmed
+          ? "opacity-55 blur-[1px] saturate-[0.85]"
+          : "opacity-100 blur-0 saturate-100",
+
+        "transition-[opacity,filter] duration-300 ease-out",
       ].join(" ")}
       aria-label={`Open ${item.title}`}
     >
-      <div className="relative w-full aspect-[4/5] bg-black overflow-hidden">
+      <div
+        className={[
+          "relative w-full aspect-[4/5] bg-black overflow-hidden rounded-2xl",
+
+          // ✅ WOW motion (no layout shift)
+          "will-change-[transform,box-shadow]",
+          "transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]",
+
+          // ✅ focus expand + lift; others shrink slightly
+          focused ? "scale-[1.085] -translate-y-2 z-20" : "scale-[0.97]",
+
+          // cinematic shadow
+          "shadow-[0_20px_80px_rgba(0,0,0,0.6)]",
+          focused ? "shadow-[0_40px_160px_rgba(0,0,0,0.85)]" : "",
+        ].join(" ")}
+      >
+        {/* WOW glow ring */}
+        <div
+          className={[
+            "pointer-events-none absolute -inset-[2px] rounded-[20px]",
+            "opacity-0 transition-opacity duration-300",
+            focused ? "opacity-100" : "opacity-0",
+          ].join(" ")}
+          style={{
+            background:
+              "radial-gradient(circle at 50% 15%, rgba(168,85,247,0.38), rgba(236,72,153,0.18) 35%, rgba(0,0,0,0) 60%)",
+          }}
+        />
+
         {/* Ghost backdrop */}
         <img
           src={item.poster}
@@ -115,10 +164,7 @@ function FantasyItem({
           aria-hidden="true"
           className={[
             "absolute inset-0 h-full w-full",
-            "object-cover",
-            "scale-[1.08]",
-            "blur-xl",
-            "opacity-35",
+            "object-cover scale-[1.08] blur-xl opacity-35",
             "[transform:translateZ(0)] [backface-visibility:hidden]",
           ].join(" ")}
           draggable={false}
@@ -163,11 +209,11 @@ function FantasyItem({
           poster={item.poster}
         />
 
-        {/* Fantasy vignette (same subtle cinematic) */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/15 via-transparent to-black/45" />
+        {/* Cinematic vignette */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/55" />
 
         {/* ultra-subtle frame */}
-        <div className="pointer-events-none absolute inset-0 shadow-[0_0_0_1px_rgba(255,255,255,0.025)]" />
+        <div className="pointer-events-none absolute inset-0 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]" />
       </div>
     </button>
   );
@@ -176,6 +222,7 @@ function FantasyItem({
 export default function FantasyGrid({ items }: { items: FantasyWork[] }) {
   const [isTouch, setIsTouch] = useState(false);
   const [active, setActive] = useState<FantasyWork | null>(null);
+  const [hoverId, setHoverId] = useState<string | null>(null);
 
   useEffect(() => {
     setIsTouch(isTouchDevice());
@@ -187,12 +234,7 @@ export default function FantasyGrid({ items }: { items: FantasyWork[] }) {
   const controller = useRef<PlaybackController>({
     requestPlay: (v) => {
       ensureVideoSrc(v);
-
       if (playing.current.includes(v)) return;
-
-      try {
-        v.preload = "metadata";
-      } catch {}
 
       while (playing.current.length >= MAX_PLAYING) {
         const old = playing.current.shift();
@@ -224,10 +266,13 @@ export default function FantasyGrid({ items }: { items: FantasyWork[] }) {
     },
   });
 
+  const anyHover = !isTouch && hoverId !== null;
+
   return (
     <>
-      <div className="w-full px-2 sm:px-4 lg:px-6">
-        <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+      <div className="w-full px-2 sm:px-3 lg:px-4">
+        {/* ✅ 4 per row + tighter gaps */}
+        <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
           {items.map((item) => (
             <FantasyItem
               key={item.id}
@@ -235,6 +280,9 @@ export default function FantasyGrid({ items }: { items: FantasyWork[] }) {
               isTouch={isTouch}
               controller={controller.current}
               onOpen={(it) => setActive(it)}
+              onHoverChange={setHoverId}
+              focused={!isTouch && hoverId === item.id}
+              dimmed={anyHover && hoverId !== item.id}
             />
           ))}
         </div>

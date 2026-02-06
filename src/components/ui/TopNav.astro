@@ -5,7 +5,7 @@ const pathname = Astro.url.pathname;
 const LEFT = {
   href: "/sale",
   mobile: "SALE",
-  desktop: "ARTWORKS ON SALE",
+  desktop: "ARTWORKS FOR SALE",
 };
 
 const RIGHT = {
@@ -14,110 +14,100 @@ const RIGHT = {
   desktop: "ORDER CUSTOM ART",
 };
 
-const LOGO_SRC = "/logo/vd-logo.png";
-
+const LOGO_SRC = "/logo/vd-logo.svg";
 const isActive = (href) => pathname.startsWith(href);
 ---
 
 <header class="fixed inset-x-0 top-0 z-[90] text-white hero-gotham">
   <!-- soft atmosphere -->
-  <div class="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/65 via-black/18 to-transparent"></div>
+  <div class="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/70 via-black/25 to-transparent"></div>
 
-  <!-- MOBILE -->
+  <!-- ================= MOBILE ================= -->
   <nav
-    class="sm:hidden mx-auto w-full px-4
-           pt-[calc(env(safe-area-inset-top)+14px)] pb-4"
+    class="sm:hidden mx-auto w-full px-3
+           pt-[calc(env(safe-area-inset-top)+10px)] pb-3"
   >
-    <div class="mx-auto grid max-w-[520px] grid-cols-[1fr_auto_1fr] items-center">
+    <div
+      class="
+        mx-auto max-w-[520px]
+        grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]
+        items-center
+        gap-x-4
+      "
+    >
       <!-- LEFT -->
-      <div class="flex justify-end pr-4">
-        <a
-          href={LEFT.href}
-          class="
-            group relative inline-flex items-center
-            text-[12px] font-black uppercase tracking-[0.26em]
-            whitespace-nowrap leading-none
-            transition
-            {isActive(LEFT.href) ? 'text-white' : 'text-white/70 hover:text-white'}
-          "
-        >
-          <span>{LEFT.mobile}</span>
-          <span
-            class={[
-              "absolute -bottom-2 left-0 h-[2px] w-full bg-white transition-transform duration-300",
-              isActive(LEFT.href) ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100",
-            ].join(" ")}
-          ></span>
-        </a>
-      </div>
-
-      <!-- LOGO (bigger on mobile) -->
-      <div class="flex justify-center">
-        <a href="/" class="group relative flex items-center justify-center" aria-label={brand}>
-          <img
-            src={LOGO_SRC}
-            alt="VD Animation logo"
-            class="
-              h-[78px] w-auto opacity-95 transition duration-300
-              group-hover:opacity-100 group-hover:scale-[1.06]
-              drop-shadow-[0_18px_80px_rgba(255,255,255,0.4)]
-            "
-            draggable="false"
-            loading="eager"
-            decoding="async"
-          />
-          <span
-            class="pointer-events-none absolute inset-[-20px] rounded-full opacity-0 blur-3xl
-                   transition duration-300 group-hover:opacity-100"
-            style="background: radial-gradient(circle, rgba(255,255,255,0.32), rgba(255,255,255,0) 65%)"
-          ></span>
-        </a>
-      </div>
-
-      <!-- RIGHT -->
-      <div class="flex justify-start pl-4">
-        <a
-          href={RIGHT.href}
-          class="
-            group relative inline-flex items-center
-            text-[12px] font-black uppercase tracking-[0.26em]
-            whitespace-nowrap leading-none
-            transition
-            {isActive(RIGHT.href) ? 'text-white' : 'text-white/70 hover:text-white'}
-          "
-        >
-          <span>{RIGHT.mobile}</span>
-          <span
-            class={[
-              "absolute -bottom-2 left-0 h-[2px] w-full bg-white transition-transform duration-300",
-              isActive(RIGHT.href) ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100",
-            ].join(" ")}
-          ></span>
-        </a>
-      </div>
-    </div>
-  </nav>
-
-  <!-- DESKTOP (nicio linie jos, doar underline pe active/hover) -->
-  <nav class="mx-auto hidden max-w-[1100px] grid-cols-3 items-center px-6 py-6 sm:grid">
-    <!-- LEFT -->
-    <div class="flex justify-end pr-8">
       <a
         href={LEFT.href}
         class="
-          group relative text-base font-black uppercase
-          tracking-[0.18em] whitespace-nowrap leading-none
-          transition
-          {isActive(LEFT.href) ? 'text-white' : 'text-white/80 hover:text-white'}
+          justify-self-end
+          text-[16px] font-black uppercase
+          tracking-normal
+          whitespace-nowrap leading-none
+          text-white/85 transition
+          hover:text-white hover:scale-[1.04]
+          active:scale-[0.98]
         "
       >
-        <span>{LEFT.desktop}</span>
-        <span
-          class={[
-            "absolute -bottom-2 left-0 h-[3px] w-full bg-white transition-transform duration-300",
-            isActive(LEFT.href) ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100",
-          ].join(" ")}
-        ></span>
+        {LEFT.mobile}
+      </a>
+
+      <!-- CENTER LOGO -->
+      <a
+        href="/"
+        class="justify-self-center group relative flex items-center justify-center"
+        aria-label={brand}
+      >
+        <img
+          src={LOGO_SRC}
+          alt="VD Animation logo"
+          class="
+            h-[36px] w-auto
+            brightness-0 invert
+            transition duration-300
+            group-hover:scale-[1.02]
+            drop-shadow-[0_4px_14px_rgba(0,0,0,0.7)]
+          "
+          draggable="false"
+          loading="eager"
+          decoding="async"
+        />
+      </a>
+
+      <!-- RIGHT -->
+      <a
+        href={RIGHT.href}
+        class="
+          justify-self-start
+          text-[16px] font-black uppercase
+          tracking-normal
+          whitespace-nowrap leading-none
+          text-white/85 transition
+          hover:text-white hover:scale-[1.04]
+          active:scale-[0.98]
+        "
+      >
+        {RIGHT.mobile}
+      </a>
+    </div>
+  </nav>
+
+  <!-- ================= DESKTOP ================= -->
+  <nav class="mx-auto hidden max-w-[700px] grid-cols-3 items-center px-2 py-4 sm:grid">
+    <!-- LEFT -->
+    <div class="flex justify-end">
+      <a
+        href={LEFT.href}
+        class={`
+          text-[20px] font-black uppercase
+          tracking-normal
+          whitespace-nowrap leading-none
+          transition
+          ${isActive(LEFT.href)
+            ? "text-white scale-[1.02]"
+            : "text-white/85 hover:text-white hover:scale-[1.03]"}
+        `}
+      >
+        {LEFT.desktop}
       </a>
     </div>
 
@@ -128,9 +118,11 @@ const isActive = (href) => pathname.startsWith(href);
           src={LOGO_SRC}
           alt="VD Animation logo"
           class="
-            h-[120px] w-auto opacity-95 transition duration-300
-            group-hover:opacity-100 group-hover:scale-[1.08]
-            drop-shadow-[0_18px_80px_rgba(255,255,255,0.4)]
+            h-[48px] w-auto
+            brightness-0 invert
+            transition duration-300
+            group-hover:scale-[1.02]
+            drop-shadow-[0_6px_18px_rgba(0,0,0,0.75)]
           "
           draggable="false"
           loading="eager"
@@ -140,23 +132,20 @@ const isActive = (href) => pathname.startsWith(href);
     </div>
 
     <!-- RIGHT -->
-    <div class="flex justify-start pl-8">
+    <div class="flex justify-start">
       <a
         href={RIGHT.href}
-        class="
-          group relative text-base font-black uppercase
-          tracking-[0.12em] whitespace-nowrap leading-none
+        class={`
+          text-[20px] font-black uppercase
+          tracking-normal
+          whitespace-nowrap leading-none
           transition
-          {isActive(RIGHT.href) ? 'text-white' : 'text-white/80 hover:text-white'}
-        "
+          ${isActive(RIGHT.href)
+            ? "text-white scale-[1.02]"
+            : "text-white/85 hover:text-white hover:scale-[1.03]"}
+        `}
       >
-        <span>{RIGHT.desktop}</span>
-        <span
-          class={[
-            "absolute -bottom-2 left-0 h-[3px] w-full bg-white transition-transform duration-300",
-            isActive(RIGHT.href) ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100",
-          ].join(" ")}
-        ></span>
+        {RIGHT.desktop}
       </a>
     </div>
   </nav>

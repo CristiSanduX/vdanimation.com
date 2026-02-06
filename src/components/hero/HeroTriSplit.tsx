@@ -152,12 +152,13 @@ export default function HeroTriSplit() {
             >
               <div className="absolute inset-0 hero-gotham">
                 <VideoPane
-                  item={item}
-                  active={!isTouch && activeIndex === i}
-                  dim={!isTouch && activeIndex !== null && activeIndex !== i}
-                  showTitle
-                  focal="top"
-                />
+  item={item}
+  active={isTouch ? true : activeIndex === i} 
+  dim={false}
+  showTitle
+  focal="top"
+/>
+
               </div>
 
               {/* extra mobile polish: subtle bottom bar behind title */}

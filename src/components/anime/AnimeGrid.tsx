@@ -1,10 +1,9 @@
-// AnimeGrid.tsx — clean gallery (NO cards/borders/rounding) + "ghost backdrop" to unify PNG cutouts
-// ✅ 4 columns on desktop (lg)
-// ✅ NO zoom anywhere
-// ✅ Poster ↔ video crossfade (CSS hover)
-// ✅ Performance: NO eager prewarm, lazy attach src only when needed
-// ✅ Mobile: IntersectionObserver autoplay + limited concurrency
-// ✅ Ghost backdrop: same poster blurred cover behind (makes cutout PNGs look intentional)
+// AnimeGrid.tsx — clean gallery + ghost backdrop
+// ✅ 4-per-row on desktop
+// ✅ tighter gaps + bigger feel
+// ✅ WOW hover: active expands, lifts, glows; others dim + shrink slightly
+// ✅ keeps perf model (lazy src + MAX_PLAYING) + NO zoom inside media (only container transforms)
+// ✅ UI anti-download: blocks right-click (capture) on grid + cards + video, nodownload attrs, overlay interceptor
 
 import React, { useEffect, useRef, useState } from "react";
 import FullscreenPreviewModal from "../ui/FullscreenPreviewModal";
@@ -20,7 +19,6 @@ type PlaybackController = {
 };
 
 function ensureVideoSrc(v: HTMLVideoElement) {
-  // Attach src lazily (prevents the browser from downloading ALL MP4s at first load)
   const anyV = v as HTMLVideoElement & { dataset: { src?: string } };
   if (!v.src) {
     const ds = anyV.dataset?.src;
@@ -33,16 +31,22 @@ function AnimeItem({
   onOpen,
   isTouch,
   controller,
+  dimmed,
+  focused,
+  onHoverChange,
 }: {
   item: AnimeWork;
   onOpen: (item: AnimeWork) => void;
   isTouch: boolean;
   controller: PlaybackController;
+  dimmed: boolean;
+  focused: boolean;
+  onHoverChange: (id: string | null) => void;
 }) {
   const wrapRef = useRef<HTMLButtonElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  // ✅ Lightweight init (no load(), no currentTime seek) — avoids 20-40 video decodes at once
+  // init
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
@@ -50,12 +54,16 @@ function AnimeItem({
       v.muted = true;
       v.playsInline = true;
       v.loop = true;
-      // Important: keep it light. We'll attach src only when needed.
       v.preload = "metadata";
+
+      // UI anti-download flags
+      (v as any).controls = false;
+      (v as any).disablePictureInPicture = true;
+      v.setAttribute("controlsList", "nodownload noremoteplayback");
     } catch {}
   }, []);
 
-  // Desktop hover: play/pause only (src attaches on first hover)
+  // Desktop hover: play/pause + focus
   useEffect(() => {
     if (isTouch) return;
 
@@ -63,8 +71,14 @@ function AnimeItem({
     const v = videoRef.current;
     if (!el || !v) return;
 
-    const onEnter = () => controller.requestPlay(v);
-    const onLeave = () => controller.release(v);
+    const onEnter = () => {
+      onHoverChange(item.id);
+      controller.requestPlay(v);
+    };
+    const onLeave = () => {
+      onHoverChange(null);
+      controller.release(v);
+    };
 
     el.addEventListener("mouseenter", onEnter);
     el.addEventListener("mouseleave", onLeave);
@@ -73,9 +87,9 @@ function AnimeItem({
       el.removeEventListener("mouseenter", onEnter);
       el.removeEventListener("mouseleave", onLeave);
     };
-  }, [isTouch, controller]);
+  }, [isTouch, controller, item.id, onHoverChange]);
 
-  // Mobile autoplay when visible (src attaches only when card becomes visible)
+  // Mobile autoplay via IO
   useEffect(() => {
     if (!isTouch) return;
 
@@ -107,16 +121,47 @@ function AnimeItem({
       ref={wrapRef}
       type="button"
       onClick={() => onOpen(item)}
+      onContextMenuCapture={(e) => e.preventDefault()} // ✅ stronger than onContextMenu
       className={[
         "group relative block w-full outline-none",
-        "overflow-hidden", // keeps the blur backdrop clean
+        "overflow-visible",
         isTouch ? "cursor-pointer" : "cursor-zoom-in",
+
+        dimmed
+          ? "opacity-55 blur-[1px] saturate-[0.85]"
+          : "opacity-100 blur-0 saturate-100",
+
+        "transition-[opacity,filter] duration-300 ease-out",
       ].join(" ")}
       aria-label={`Open ${item.title}`}
     >
-      {/* Stage: no borders/rounding, but consistent frame */}
-      <div className="relative w-full aspect-[4/5] bg-black overflow-hidden">
-        {/* ✅ Ghost backdrop (same image) */}
+      <div
+        className={[
+          "relative w-full aspect-[4/5] bg-black overflow-hidden rounded-2xl",
+
+          "will-change-[transform,box-shadow]",
+          "transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]",
+
+          focused ? "scale-[1.085] -translate-y-2 z-20" : "scale-[0.97]",
+
+          "shadow-[0_20px_80px_rgba(0,0,0,0.6)]",
+          focused ? "shadow-[0_40px_160px_rgba(0,0,0,0.85)]" : "",
+        ].join(" ")}
+      >
+        {/* WOW glow ring (anime vibe: violet + cyan) */}
+        <div
+          className={[
+            "pointer-events-none absolute -inset-[2px] rounded-[20px]",
+            "opacity-0 transition-opacity duration-300",
+            focused ? "opacity-100" : "opacity-0",
+          ].join(" ")}
+          style={{
+            background:
+              "radial-gradient(circle at 50% 15%, rgba(168,85,247,0.34), rgba(34,211,238,0.16) 35%, rgba(0,0,0,0) 62%)",
+          }}
+        />
+
+        {/* Ghost backdrop */}
         <img
           src={item.poster}
           alt=""
@@ -133,16 +178,16 @@ function AnimeItem({
           loading="lazy"
           decoding="async"
         />
-        {/* darken + unify */}
+
         <div className="absolute inset-0 bg-black/60" />
 
-        {/* Foreground poster (no crop) */}
+        {/* Poster */}
         <img
           src={item.poster}
           alt={item.title}
           className={[
             "absolute inset-0 h-full w-full select-none",
-            "object-contain", // ✅ NO CROP
+            "object-contain",
             "opacity-100 transition-opacity duration-200",
             isTouch ? "" : "group-hover:opacity-0",
             "[transform:translateZ(0)] [backface-visibility:hidden]",
@@ -152,7 +197,7 @@ function AnimeItem({
           draggable={false}
         />
 
-        {/* Foreground video (lazy src attach) */}
+        {/* Video */}
         <video
           ref={videoRef}
           data-src={item.mp4}
@@ -169,12 +214,22 @@ function AnimeItem({
           playsInline
           preload="metadata"
           poster={item.poster}
+          controls={false}
+          controlsList="nodownload noremoteplayback"
+          disablePictureInPicture
+          onContextMenuCapture={(e) => e.preventDefault()}
         />
 
-        {/* subtle cinematic vignette */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/35" />
+        {/* ✅ transparent interceptor layer (captures right click) */}
+        <div
+          className="absolute inset-0 z-10"
+          onContextMenuCapture={(e) => e.preventDefault()}
+        />
 
-        {/* ultra-subtle separators feel (not borders): soft falloff */}
+        {/* vignette */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/55" />
+
+        {/* ultra-subtle frame */}
         <div className="pointer-events-none absolute inset-0 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]" />
       </div>
     </button>
@@ -184,23 +239,29 @@ function AnimeItem({
 export default function AnimeGrid({ items }: { items: AnimeWork[] }) {
   const [isTouch, setIsTouch] = useState(false);
   const [active, setActive] = useState<AnimeWork | null>(null);
+  const [hoverId, setHoverId] = useState<string | null>(null);
 
   useEffect(() => {
     setIsTouch(isTouchDevice());
   }, []);
 
-  // ✅ limit concurrent videos (mobile perf)
+  // ✅ Block right-click menu ONLY while this grid is mounted (strongest UI-only fix)
+  useEffect(() => {
+    const block = (e: MouseEvent) => e.preventDefault();
+    document.addEventListener("contextmenu", block, { capture: true });
+    return () => {
+      document.removeEventListener("contextmenu", block, { capture: true } as any);
+    };
+  }, []);
+
   const MAX_PLAYING = 1;
   const playing = useRef<HTMLVideoElement[]>([]);
 
   const controller = useRef<PlaybackController>({
     requestPlay: (v) => {
-      // ✅ attach src only when needed
       ensureVideoSrc(v);
-
       if (playing.current.includes(v)) return;
 
-      // if it's not loaded yet, nudge it lightly
       try {
         v.preload = "metadata";
       } catch {}
@@ -210,7 +271,6 @@ export default function AnimeGrid({ items }: { items: AnimeWork[] }) {
         if (!old) continue;
         try {
           old.pause();
-          // don't seek aggressively; it can be expensive on some devices
         } catch {}
       }
 
@@ -236,11 +296,16 @@ export default function AnimeGrid({ items }: { items: AnimeWork[] }) {
     },
   });
 
+  const anyHover = !isTouch && hoverId !== null;
+
   return (
     <>
-      {/* Full-width gallery, 4 columns on desktop */}
-      <div className="w-full px-2 sm:px-4 lg:px-6">
-        <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+      <div
+        className="w-full px-2 sm:px-3 lg:px-4"
+        onContextMenuCapture={(e) => e.preventDefault()}
+      >
+        {/* ✅ 4 columns on desktop + tighter gaps */}
+        <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
           {items.map((item) => (
             <AnimeItem
               key={item.id}
@@ -248,6 +313,9 @@ export default function AnimeGrid({ items }: { items: AnimeWork[] }) {
               isTouch={isTouch}
               controller={controller.current}
               onOpen={(it) => setActive(it)}
+              onHoverChange={setHoverId}
+              focused={!isTouch && hoverId === item.id}
+              dimmed={anyHover && hoverId !== item.id}
             />
           ))}
         </div>
