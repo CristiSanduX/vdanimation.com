@@ -4,7 +4,6 @@ import FullscreenPreviewModal from "../ui/FullscreenPreviewModal";
 
 type SaleItem = {
   key: string;
-  priceLabel?: string;
   poster: string;
   mp4: string;
   webm?: string;
@@ -15,16 +14,21 @@ const isTouchDevice = () =>
   typeof window !== "undefined" &&
   (navigator.maxTouchPoints > 0 || "ontouchstart" in window);
 
+/* =========================
+   SALE CARD
+========================= */
 function SaleCard({
   item,
   active,
   dim,
   onOpen,
+  cta,
 }: {
   item: SaleItem;
   active: boolean;
   dim: boolean;
   onOpen: () => void;
+  cta: "FREE" | "BUY";
 }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -69,7 +73,11 @@ function SaleCard({
     };
 
     if (active) play();
-    else v.pause();
+    else {
+      try {
+        v.pause();
+      } catch {}
+    }
   }, [active]);
 
   return (
@@ -87,7 +95,7 @@ function SaleCard({
         draggable={false}
       />
 
-      {/* Video layer (CSS fade = smoother decât GSAP) */}
+      {/* Video layer (CSS fade) */}
       <div
         className={[
           "absolute inset-0 transition-opacity duration-300 ease-out",
@@ -109,74 +117,76 @@ function SaleCard({
         </video>
       </div>
 
-      {/* Cinematic overlays */}
+      {/* Cleaner cinematic overlays (fără “negru” agresiv) */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-black/10" />
-        <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-black/65 via-black/15 to-transparent" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0)_0%,rgba(0,0,0,0.25)_65%,rgba(0,0,0,0.55)_100%)]" />
+        <div className="absolute inset-0 bg-black/5" />
+        <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0)_0%,rgba(0,0,0,0.18)_70%,rgba(0,0,0,0.38)_100%)]" />
       </div>
 
-      {/* Dim (doar overlay, fără filter) */}
+      {/* Dim (doar overlay, fără filter/blur) */}
       <div
         className={[
           "pointer-events-none absolute inset-0 transition duration-300",
-          dim ? "bg-black/45" : "bg-transparent",
+          dim ? "bg-black/30" : "bg-transparent",
         ].join(" ")}
       />
 
-      {/* ✅ BUY (mai mic + mai jos / mai aproape de bottom) */}
+      {/* CTA (FREE / BUY) — no blur, clean glass */}
       <a
         href={item.buyUrl}
         target="_blank"
         rel="noreferrer"
         onClick={(e) => e.stopPropagation()}
         className={[
-          // poziție: mai jos
           "absolute left-1/2 -translate-x-1/2",
-          "bottom-3 sm:bottom-4", // mai jos pe ambele
-          // anim: apare/dispare
+          "bottom-3 sm:bottom-4",
           "opacity-0 translate-y-1",
           "transition duration-300 ease-out",
           active ? "opacity-100 translate-y-0" : "",
         ].join(" ")}
-        aria-label={`Buy artwork ${item.priceLabel ?? ""}`}
+        aria-label={`${cta} artwork`}
       >
         <span
           className={[
-            // ✅ mult mai mic decât înainte
-            "inline-flex items-center justify-center",
-            "rounded-full",
-            "px-4 py-2 sm:px-4 sm:py-2",
+            "inline-flex items-center justify-center rounded-full",
+            "px-5 py-2 sm:px-5 sm:py-2",
             "text-[11px] sm:text-[12px]",
             "font-black uppercase tracking-[0.22em]",
-            "text-white/90",
-            "bg-black/28 backdrop-blur-md",
-            "border border-white/14",
-            "shadow-[0_14px_70px_rgba(0,0,0,0.70)]",
+            "text-white",
+            "border border-white/28",
+            // ✅ no backdrop-blur
+            cta === "FREE" ? "bg-white/16" : "bg-white/10",
+            cta === "FREE"
+              ? "shadow-[0_16px_70px_rgba(255,255,255,0.12)]"
+              : "shadow-[0_16px_70px_rgba(0,0,0,0.65)]",
             "transition duration-300",
-            "hover:bg-black/40 hover:border-white/22 hover:text-white",
+            "hover:bg-white/18 hover:border-white/40",
             "focus:outline-none focus:ring-2 focus:ring-white/25",
           ].join(" ")}
         >
-          BUY{item.priceLabel ? ` ${item.priceLabel}` : ""}
+          {cta}
         </span>
       </a>
     </div>
   );
 }
 
+/* =========================
+   SALE GRID
+========================= */
 export default function SaleGrid() {
   const items: SaleItem[] = useMemo(
     () => [
-      { key: "art-01", priceLabel: "€30", poster: "/media/sale/art-01.png", mp4: "/media/sale/art-01.mp4", buyUrl: "https://example.com/buy/art-01" },
-      { key: "art-02", priceLabel: "€30", poster: "/media/sale/art-02.png", mp4: "/media/sale/art-02.mp4", buyUrl: "https://example.com/buy/art-02" },
-      { key: "art-03", priceLabel: "€30", poster: "/media/sale/art-03.png", mp4: "/media/sale/art-03.mp4", buyUrl: "https://example.com/buy/art-03" },
-      { key: "art-04", priceLabel: "€30", poster: "/media/sale/art-04.png", mp4: "/media/sale/art-04.mp4", buyUrl: "https://example.com/buy/art-04" },
-      { key: "art-05", priceLabel: "€30", poster: "/media/sale/art-05.png", mp4: "/media/sale/art-05.mp4", buyUrl: "https://example.com/buy/art-05" },
-      { key: "art-06", priceLabel: "€30", poster: "/media/sale/art-06.png", mp4: "/media/sale/art-06.mp4", buyUrl: "https://example.com/buy/art-06" },
-      { key: "art-07", priceLabel: "€30", poster: "/media/sale/art-07.png", mp4: "/media/sale/art-07.mp4", buyUrl: "https://example.com/buy/art-07" },
-      { key: "art-08", priceLabel: "€30", poster: "/media/sale/art-08.png", mp4: "/media/sale/art-08.mp4", buyUrl: "https://example.com/buy/art-08" },
-      { key: "art-09", priceLabel: "€30", poster: "/media/sale/art-09.png", mp4: "/media/sale/art-09.mp4", buyUrl: "https://example.com/buy/art-09" },
+      { key: "art-01", poster: "/media/sale/art-01.png", mp4: "/media/sale/art-01.mp4", buyUrl: "https://example.com/buy/art-01" },
+      { key: "art-02", poster: "/media/sale/art-02.png", mp4: "/media/sale/art-02.mp4", buyUrl: "https://example.com/buy/art-02" },
+      { key: "art-03", poster: "/media/sale/art-03.png", mp4: "/media/sale/art-03.mp4", buyUrl: "https://example.com/buy/art-03" },
+      { key: "art-04", poster: "/media/sale/art-04.png", mp4: "/media/sale/art-04.mp4", buyUrl: "https://example.com/buy/art-04" },
+      { key: "art-05", poster: "/media/sale/art-05.png", mp4: "/media/sale/art-05.mp4", buyUrl: "https://example.com/buy/art-05" },
+      { key: "art-06", poster: "/media/sale/art-06.png", mp4: "/media/sale/art-06.mp4", buyUrl: "https://example.com/buy/art-06" },
+      { key: "art-07", poster: "/media/sale/art-07.png", mp4: "/media/sale/art-07.mp4", buyUrl: "https://example.com/buy/art-07" },
+      { key: "art-08", poster: "/media/sale/art-08.png", mp4: "/media/sale/art-08.mp4", buyUrl: "https://example.com/buy/art-08" },
+      { key: "art-09", poster: "/media/sale/art-09.png", mp4: "/media/sale/art-09.mp4", buyUrl: "https://example.com/buy/art-09" },
     ],
     []
   );
@@ -185,30 +195,30 @@ export default function SaleGrid() {
   const [isTouch, setIsTouch] = useState(false);
   const [modalIndex, setModalIndex] = useState<number | null>(null);
 
-  // ✅ mobile: first tap activates (video + buy), second tap opens modal
+  // ✅ mobile: first tap activates, second tap opens modal
   const [armedIndex, setArmedIndex] = useState<number | null>(null);
 
   const cellRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => setIsTouch(isTouchDevice()), []);
 
-  // ✅ Only transform scale (no filter) = less lag
+  // GSAP scale (desktop hover vibe)
   useEffect(() => {
     const cells = cellRefs.current.filter(Boolean) as HTMLDivElement[];
     if (cells.length !== items.length) return;
 
     cells.forEach((el, i) => {
-      const isActive = active === i;
-      const hasActive = active !== null;
+      const isA = active === i;
+      const hasA = active !== null;
 
       gsap.to(el, {
-        scale: hasActive ? (isActive ? 1.03 : 0.995) : 1,
+        scale: hasA ? (isA ? 1.03 : 0.995) : 1,
         duration: 0.28,
         ease: "power3.out",
         overwrite: "auto",
       });
 
-      el.style.zIndex = hasActive ? (isActive ? "20" : "1") : "1";
+      el.style.zIndex = hasA ? (isA ? "20" : "1") : "1";
     });
   }, [active, items.length]);
 
@@ -228,9 +238,6 @@ export default function SaleGrid() {
       return;
     }
 
-    // tap behavior:
-    // 1st tap -> activate + show BUY
-    // 2nd tap same card -> open modal
     if (armedIndex === i && active === i) {
       setModalIndex(i);
       return;
@@ -250,33 +257,36 @@ export default function SaleGrid() {
         <div className="mx-auto max-w-7xl px-6 pt-28 pb-24">
           <div className="mt-12 grid gap-0 sm:grid-cols-2 xl:grid-cols-3">
             {items.map((item, i) => {
-              const isActive = active === i;
-              const dim = active !== null && !isActive;
+              const isA = active === i;
+              const dim = active !== null && !isA;
 
               return (
                 <div
                   key={item.key}
                   ref={(el) => {
-                    cellRefs.current[i] = el;
+                    cellRefs.current[i] = el; // ✅ TS-safe (returns void)
                   }}
                   className={[
                     "relative aspect-[16/10] overflow-hidden bg-black",
                     "outline-none transform-gpu will-change-transform",
-                    // separators, dar fără “card border”
                     "after:pointer-events-none after:absolute after:inset-0 after:content-['']",
                     "after:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]",
-                    isActive ? "shadow-[0_50px_220px_rgba(0,0,0,0.82)]" : "",
+                    isA ? "shadow-[0_50px_220px_rgba(0,0,0,0.82)]" : "",
                   ].join(" ")}
-                  // desktop hover
                   onPointerEnter={() => onEnter(i)}
                   onPointerLeave={onLeave}
                   onFocus={() => onEnter(i)}
                   onBlur={onLeave}
-                  // mobile tap
                   onClick={() => onTapCard(i)}
                   tabIndex={0}
                 >
-                  <SaleCard item={item} active={isActive} dim={dim} onOpen={() => onTapCard(i)} />
+                  <SaleCard
+                    item={item}
+                    active={isA}
+                    dim={dim}
+                    onOpen={() => onTapCard(i)}
+                    cta={i < 3 ? "FREE" : "BUY"}
+                  />
                 </div>
               );
             })}
@@ -292,7 +302,7 @@ export default function SaleGrid() {
         poster={modalIndex !== null ? items[modalIndex].poster : ""}
         mp4={modalIndex !== null ? items[modalIndex].mp4 : ""}
         buyUrl={modalIndex !== null ? items[modalIndex].buyUrl : ""}
-        priceLabel={modalIndex !== null ? items[modalIndex].priceLabel : ""}
+        priceLabel="" // ✅ nu mai afișăm preț aici dacă vrei “BUY only”
         onClose={() => setModalIndex(null)}
       />
     </>
