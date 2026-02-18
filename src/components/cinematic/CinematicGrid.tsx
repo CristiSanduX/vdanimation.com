@@ -1,7 +1,7 @@
-// CinematicGrid.tsx — clean gallery + ghost backdrop
+// CinematicGrid.tsx — clean gallery + ghost backdrop (NO dim/blur between items)
 // ✅ 4-per-row on desktop
 // ✅ tighter gaps + bigger feel
-// ✅ WOW hover: active expands, lifts, glows; others dim + shrink slightly
+// ✅ WOW hover: active expands/lifts/glows; others stay clean (no dim, no blur)
 // ✅ keeps perf model (lazy src + MAX_PLAYING)
 
 import React, { useEffect, useRef, useState } from "react";
@@ -30,7 +30,6 @@ function CinematicItem({
   onOpen,
   isTouch,
   controller,
-  dimmed,
   focused,
   onHoverChange,
 }: {
@@ -38,7 +37,6 @@ function CinematicItem({
   onOpen: (item: CinematicWork) => void;
   isTouch: boolean;
   controller: PlaybackController;
-  dimmed: boolean;
   focused: boolean;
   onHoverChange: (id: string | null) => void;
 }) {
@@ -82,7 +80,7 @@ function CinematicItem({
     };
   }, [isTouch, controller, item.id, onHoverChange]);
 
-  // Mobile autoplay via IO (no dim/focus)
+  // Mobile autoplay via IO (no hover states)
   useEffect(() => {
     if (!isTouch) return;
 
@@ -118,13 +116,7 @@ function CinematicItem({
         "group relative block w-full outline-none",
         "overflow-visible", // allow glow/expand
         isTouch ? "cursor-pointer" : "cursor-zoom-in",
-
-        // other cards dim when something is hovered
-        dimmed
-          ? "opacity-55 blur-[1px] saturate-[0.9]"
-          : "opacity-100 blur-0 saturate-100",
-
-        "transition-[opacity,filter] duration-300 ease-out",
+        // ✅ CLEAN: no dim / no blur / no saturate changes
       ].join(" ")}
       aria-label={`Open ${item.title}`}
     >
@@ -136,12 +128,12 @@ function CinematicItem({
           "will-change-[transform,box-shadow]",
           "transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]",
 
-          // ✅ focus expand + lift; others shrink slightly
-          focused ? "scale-[1.075] -translate-y-2 z-20" : "scale-[0.975]",
+          // ✅ focus expand + lift; others stay at 1 (clean)
+          focused ? "scale-[1.06] -translate-y-2 z-20" : "scale-100",
 
           // cinematic shadow
-          "shadow-[0_20px_80px_rgba(0,0,0,0.6)]",
-          focused ? "shadow-[0_38px_150px_rgba(0,0,0,0.85)]" : "",
+          "shadow-[0_18px_70px_rgba(0,0,0,0.55)]",
+          focused ? "shadow-[0_45px_180px_rgba(0,0,0,0.85)]" : "",
         ].join(" ")}
       >
         {/* cinematic glow ring (neutral / cool) */}
@@ -153,7 +145,7 @@ function CinematicItem({
           ].join(" ")}
           style={{
             background:
-              "radial-gradient(circle at 50% 18%, rgba(255,255,255,0.18), rgba(148,163,184,0.10) 34%, rgba(0,0,0,0) 62%)",
+              "radial-gradient(circle at 50% 18%, rgba(255,255,255,0.16), rgba(148,163,184,0.10) 34%, rgba(0,0,0,0) 62%)",
           }}
         />
 
@@ -172,7 +164,8 @@ function CinematicItem({
           decoding="async"
         />
 
-        <div className="absolute inset-0 bg-black/60" />
+        {/* ✅ lighter overlay (less “black haze”) */}
+        <div className="absolute inset-0 bg-black/45" />
 
         {/* Poster */}
         <img
@@ -209,11 +202,11 @@ function CinematicItem({
           poster={item.poster}
         />
 
-        {/* Cinematic vignette */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/12 via-transparent to-black/55" />
+        {/* Cinematic vignette (subtle, no heavy bottom black) */}
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0)_0%,rgba(0,0,0,0.22)_70%,rgba(0,0,0,0.42)_100%)]" />
 
         {/* ultra-subtle frame */}
-        <div className="pointer-events-none absolute inset-0 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]" />
+        <div className="pointer-events-none absolute inset-0 shadow-[0_0_0_1px_rgba(255,255,255,0.035)]" />
       </div>
     </button>
   );
@@ -266,12 +259,10 @@ export default function CinematicGrid({ items }: { items: CinematicWork[] }) {
     },
   });
 
-  const anyHover = !isTouch && hoverId !== null;
-
   return (
     <>
       <div className="w-full px-2 sm:px-3 lg:px-4">
-        {/* ✅ 4 per row + tighter gaps */}
+        {/* ✅ clean grid: only spacing */}
         <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
           {items.map((item) => (
             <CinematicItem
@@ -282,7 +273,6 @@ export default function CinematicGrid({ items }: { items: CinematicWork[] }) {
               onOpen={(it) => setActive(it)}
               onHoverChange={setHoverId}
               focused={!isTouch && hoverId === item.id}
-              dimmed={anyHover && hoverId !== item.id}
             />
           ))}
         </div>

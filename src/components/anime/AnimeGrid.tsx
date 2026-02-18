@@ -1,9 +1,9 @@
-// AnimeGrid.tsx — clean gallery + ghost backdrop
+// AnimeGrid.tsx — clean gallery + ghost backdrop (NO dim/blur between items)
 // ✅ 4-per-row on desktop
 // ✅ tighter gaps + bigger feel
-// ✅ WOW hover: active expands, lifts, glows; others dim + shrink slightly
+// ✅ WOW hover: active expands/lifts/glows; others stay clean (no dim, no blur)
 // ✅ keeps perf model (lazy src + MAX_PLAYING) + NO zoom inside media (only container transforms)
-// ✅ UI anti-download: blocks right-click (capture) on grid + cards + video, nodownload attrs, overlay interceptor
+// ✅ UI anti-download: blocks right-click on grid + cards + video, nodownload attrs, overlay interceptor
 
 import React, { useEffect, useRef, useState } from "react";
 import FullscreenPreviewModal from "../ui/FullscreenPreviewModal";
@@ -31,7 +31,6 @@ function AnimeItem({
   onOpen,
   isTouch,
   controller,
-  dimmed,
   focused,
   onHoverChange,
 }: {
@@ -39,7 +38,6 @@ function AnimeItem({
   onOpen: (item: AnimeWork) => void;
   isTouch: boolean;
   controller: PlaybackController;
-  dimmed: boolean;
   focused: boolean;
   onHoverChange: (id: string | null) => void;
 }) {
@@ -121,17 +119,12 @@ function AnimeItem({
       ref={wrapRef}
       type="button"
       onClick={() => onOpen(item)}
-      onContextMenuCapture={(e) => e.preventDefault()} // ✅ stronger than onContextMenu
+      onContextMenuCapture={(e) => e.preventDefault()}
       className={[
         "group relative block w-full outline-none",
         "overflow-visible",
         isTouch ? "cursor-pointer" : "cursor-zoom-in",
-
-        dimmed
-          ? "opacity-55 blur-[1px] saturate-[0.85]"
-          : "opacity-100 blur-0 saturate-100",
-
-        "transition-[opacity,filter] duration-300 ease-out",
+        // ✅ CLEAN: no dim / no blur / no saturate changes on other items
       ].join(" ")}
       aria-label={`Open ${item.title}`}
     >
@@ -142,10 +135,11 @@ function AnimeItem({
           "will-change-[transform,box-shadow]",
           "transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]",
 
-          focused ? "scale-[1.085] -translate-y-2 z-20" : "scale-[0.97]",
+          // ✅ focus expand + lift; others stay at 1 (clean)
+          focused ? "scale-[1.065] -translate-y-2 z-20" : "scale-100",
 
-          "shadow-[0_20px_80px_rgba(0,0,0,0.6)]",
-          focused ? "shadow-[0_40px_160px_rgba(0,0,0,0.85)]" : "",
+          "shadow-[0_18px_70px_rgba(0,0,0,0.55)]",
+          focused ? "shadow-[0_45px_180px_rgba(0,0,0,0.85)]" : "",
         ].join(" ")}
       >
         {/* WOW glow ring (anime vibe: violet + cyan) */}
@@ -157,7 +151,7 @@ function AnimeItem({
           ].join(" ")}
           style={{
             background:
-              "radial-gradient(circle at 50% 15%, rgba(168,85,247,0.34), rgba(34,211,238,0.16) 35%, rgba(0,0,0,0) 62%)",
+              "radial-gradient(circle at 50% 15%, rgba(168,85,247,0.32), rgba(34,211,238,0.14) 35%, rgba(0,0,0,0) 62%)",
           }}
         />
 
@@ -179,7 +173,8 @@ function AnimeItem({
           decoding="async"
         />
 
-        <div className="absolute inset-0 bg-black/60" />
+        {/* ✅ lighter overlay (less “black haze”) */}
+        <div className="absolute inset-0 bg-black/45" />
 
         {/* Poster */}
         <img
@@ -220,17 +215,17 @@ function AnimeItem({
           onContextMenuCapture={(e) => e.preventDefault()}
         />
 
-        {/* ✅ transparent interceptor layer (captures right click) */}
+        {/* transparent interceptor layer (captures right click) */}
         <div
           className="absolute inset-0 z-10"
           onContextMenuCapture={(e) => e.preventDefault()}
         />
 
-        {/* vignette */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/55" />
+        {/* vignette (subtle, no heavy bottom black) */}
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0)_0%,rgba(0,0,0,0.22)_70%,rgba(0,0,0,0.42)_100%)]" />
 
         {/* ultra-subtle frame */}
-        <div className="pointer-events-none absolute inset-0 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]" />
+        <div className="pointer-events-none absolute inset-0 shadow-[0_0_0_1px_rgba(255,255,255,0.035)]" />
       </div>
     </button>
   );
@@ -245,7 +240,7 @@ export default function AnimeGrid({ items }: { items: AnimeWork[] }) {
     setIsTouch(isTouchDevice());
   }, []);
 
-  // ✅ Block right-click menu ONLY while this grid is mounted (strongest UI-only fix)
+  // ✅ Block right-click menu ONLY while this grid is mounted
   useEffect(() => {
     const block = (e: MouseEvent) => e.preventDefault();
     document.addEventListener("contextmenu", block, { capture: true });
@@ -296,8 +291,6 @@ export default function AnimeGrid({ items }: { items: AnimeWork[] }) {
     },
   });
 
-  const anyHover = !isTouch && hoverId !== null;
-
   return (
     <>
       <div
@@ -315,7 +308,6 @@ export default function AnimeGrid({ items }: { items: AnimeWork[] }) {
               onOpen={(it) => setActive(it)}
               onHoverChange={setHoverId}
               focused={!isTouch && hoverId === item.id}
-              dimmed={anyHover && hoverId !== item.id}
             />
           ))}
         </div>
