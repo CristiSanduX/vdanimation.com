@@ -1,10 +1,3 @@
-// VideoPane.tsx — CLEAR + PERF (lazy src, no eager load)
-// ✅ smooth reveal on Safari (waits for first frame)
-// ✅ keeps poster + video layer
-// ✅ avoids first-load lag: no preload auto + no load() on mount
-// ✅ lazy attach src only when active
-// ✅ supports mobile "focal" (top/center) so posters show higher framing
-
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 
@@ -16,31 +9,34 @@ export type VideoPaneItem = {
   webm?: string;
 };
 
-export default function VideoPane({
-  item,
-  active,
-  dim, // kept for API compatibility but ignored (no darkening)
-  showTitle = true,
-  focal = "center",
-}: {
+interface VideoPaneProps {
   item: VideoPaneItem;
+  index: number;
   active: boolean;
-  dim: boolean;
+  isAnyActive: boolean;
   showTitle?: boolean;
   focal?: "center" | "top";
-}) {
+}
+
+export default function VideoPane({
+  item,
+  index,
+  active,
+  isAnyActive,
+  showTitle = true,
+  focal = "center",
+}: VideoPaneProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const videoWrapRef = useRef<HTMLDivElement | null>(null);
+  const textGroupRef = useRef<HTMLDivElement | null>(null);
 
-  // ✅ “see more from above” on mobile (or whenever you pass focal="top")
-  // top variant is slightly lifted: 50% 15%
+  // Poziționare imagine (focal top pentru mobile)
   const objectPosClass = focal === "top" ? "object-[50%_15%]" : "object-center";
 
+  // ✅ PERFORMANȚĂ: Atașăm sursele video doar când e nevoie
   const ensureSourcesAttached = () => {
     const video = videoRef.current;
     if (!video) return;
-
-    // If sources already exist, don't re-add
     const hasAnySource = video.querySelector("source") !== null;
     if (hasAnySource) return;
 
@@ -50,161 +46,136 @@ export default function VideoPane({
       s.type = "video/webm";
       video.appendChild(s);
     }
-
     const s2 = document.createElement("source");
     s2.src = item.mp4;
     s2.type = "video/mp4";
     video.appendChild(s2);
-
-    // Keep it light; don't force full download
-    try {
-      video.preload = "metadata";
-    } catch {}
+    video.preload = "metadata";
   };
 
-  // Lightweight init only
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    try {
-      video.muted = true;
-      video.playsInline = true;
-      video.loop = true;
-      video.preload = "metadata";
-      // do NOT call load() here
-    } catch {}
-  }, []);
-
-  // Play/pause + fade video layer via GSAP (fade AFTER first frame for Safari)
+  // ✅ ANIMAȚIA "BOMBA" (GSAP)
   useEffect(() => {
     const video = videoRef.current;
     const wrap = videoWrapRef.current;
-    if (!video || !wrap) return;
-
-    let tween: gsap.core.Tween | null = null;
-
-    const fadeTo = (opacity: number) => {
-      tween?.kill();
-      tween = gsap.to(wrap, {
-        opacity,
-        duration: 0.28,
-        ease: "power2.out",
-        overwrite: "auto",
-        force3D: true,
-      });
-    };
-
-    const revealAfterFirstFrame = () => {
-      // @ts-ignore
-      if (typeof video.requestVideoFrameCallback === "function") {
-        // @ts-ignore
-        video.requestVideoFrameCallback(() => fadeTo(1));
-        return;
-      }
-
-      const onPlaying = () => fadeTo(1);
-      video.addEventListener("playing", onPlaying, { once: true });
-    };
-
-    const tryPlay = async () => {
-      try {
-        // attach sources only when needed
-        ensureSourcesAttached();
-
-        // tiny seek only if we already have metadata
-        try {
-          if (video.readyState !== 0) {
-            video.currentTime = 0.001;
-          }
-        } catch {}
-
-        const p = video.play();
-        if (p && typeof (p as Promise<void>).catch === "function") {
-          await p;
-        }
-
-        revealAfterFirstFrame();
-      } catch {
-        fadeTo(0);
-      }
-    };
+    const textGroup = textGroupRef.current;
+    if (!video || !wrap || !textGroup) return;
 
     if (active) {
-      tryPlay();
-    } else {
-      try {
-        video.pause();
-      } catch {}
-      fadeTo(0);
-    }
+      ensureSourcesAttached();
+      video.play().catch(() => {});
+      
+      // 1. Fade-in video
+      gsap.to(wrap, { 
+        opacity: 1, 
+        duration: 0.8, 
+        ease: "power2.out" 
+      });
 
-    return () => {
-      tween?.kill();
-      tween = null;
-    };
-  }, [active, item.mp4, item.webm]);
+      // 2. Center Lift: Textul zboară la mijloc
+      gsap.to(textGroup, {
+        top: "50%",
+        yPercent: -50,
+        duration: 1.1,
+        ease: "expo.out", // Easing-ul de lux
+      });
+    } else {
+      video.pause();
+      
+      // 1. Fade-out video
+      gsap.to(wrap, { 
+        opacity: 0, 
+        duration: 0.6, 
+        ease: "power2.in" 
+      });
+
+      // 2. Revenire: Textul coboară la bază
+      gsap.to(textGroup, {
+        top: "85%",
+        yPercent: 0,
+        duration: 0.9,
+        ease: "power3.inOut",
+      });
+    }
+  }, [active]);
 
   return (
-    <div className="group relative h-full w-full">
-      {/* Poster (always visible under video layer) */}
-      <img
-        src={item.poster}
-        alt={item.title}
-        className={[
-          "absolute inset-0 h-full w-full object-cover",
-          objectPosClass,
-          "[transform:translateZ(0)] [backface-visibility:hidden]",
-        ].join(" ")}
-        draggable={false}
-        loading="eager"
-        decoding="async"
-      />
-
-      {/* Video layer (fades in when active) */}
-      <div
-        ref={videoWrapRef}
-        className={[
-          "absolute inset-0 opacity-0",
-          "will-change-[opacity,transform]",
-          "[transform:translateZ(0)] [backface-visibility:hidden]",
-        ].join(" ")}
-        aria-hidden="true"
+    <div className="relative h-full w-full overflow-hidden bg-neutral-900">
+      
+      {/* 1. MEDIA LAYER: Zoom-in când e activ + Blur pe restul */}
+      <div 
+        className={`absolute inset-0 transition-all duration-[1.5s] ease-[cubic-bezier(0.2,0,0.2,1)] ${
+          active ? "scale-110 opacity-100" : "scale-100 opacity-60"
+        } ${!active && isAnyActive ? "grayscale-[0.6] blur-[2px] opacity-30" : ""}`}
       >
-        <video
-          ref={videoRef}
-          className={[
-            "h-full w-full object-cover",
-            objectPosClass,
-            "[transform:translateZ(0)] [backface-visibility:hidden]",
-          ].join(" ")}
-          muted
-          playsInline
-          loop
-          preload="metadata"
-          poster={item.poster}
+        {/* Poster stativ sub video */}
+        <img
+          src={item.poster}
+          alt={item.title}
+          className={`absolute inset-0 h-full w-full object-cover ${objectPosClass}`}
+          draggable={false}
         />
+
+        {/* Video Layer */}
+        <div
+          ref={videoWrapRef}
+          className="absolute inset-0 opacity-0 will-change-opacity"
+        >
+          <video
+            ref={videoRef}
+            className={`h-full w-full object-cover ${objectPosClass}`}
+            muted
+            playsInline
+            loop
+          />
+        </div>
       </div>
 
-      {/* Title */}
+      {/* 2. OVERLAY DRAMATIC: Gradient pentru contrast text */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/30 z-10 pointer-events-none" />
+
+      {/* 3. KINETIC TEXT GROUP: Inima designului */}
       {showTitle && (
-        <div className="absolute inset-x-0 bottom-12 sm:bottom-10 px-5">
-          <div
-            className={[
-              "hero-gotham",
-              "[letter-spacing:0]",
-              "text-center font-black uppercase whitespace-nowrap leading-none",
-              "text-2xl sm:text-4xl lg:text-5xl",
-"!tracking-normal",
-              "[text-shadow:0_10px_30px_rgba(0,0,0,0.35)]",
-              "transition-all duration-300",
-              active ? "opacity-100 scale-100" : "opacity-95 scale-[0.98]",
-            ].join(" ")}
+        <div
+          ref={textGroupRef}
+          className="absolute left-0 right-0 z-20 flex flex-col items-center px-6 pointer-events-none"
+          style={{ top: "85%" }} // Starea inițială jos
+        >
+          {/* Index mic: [ 01 ] */}
+          <span className="text-[10px] tracking-[0.7em] font-mono text-white/40 mb-3 uppercase">
+            0{index + 1}
+          </span>
+
+          {/* Titlul Gotham: Hollow-to-Solid */}
+          <h2
+            className={`hero-gotham font-black leading-none uppercase transition-all duration-1000 tracking-tighter ${
+              active ? "text-5xl md:text-[7.5vw] scale-100" : "text-4xl md:text-5xl scale-90"
+            }`}
+            style={{
+              // Interior transparent când e jos, Alb plin când e sus
+              color: active ? "white" : "transparent",
+              // Contur alb fin
+              WebkitTextStroke: active ? "0px" : "1.5px rgba(255,255,255,0.8)",
+              textShadow: active ? "0 20px 60px rgba(0,0,0,0.6)" : "none",
+            }}
           >
             {item.title}
-          </div>
+          </h2>
+
+          {/* Linie de design care se extinde */}
+          <div
+            className={`mt-8 h-[1px] bg-white transition-all duration-[1.2s] ease-out ${
+              active ? "w-24 opacity-100" : "w-0 opacity-0"
+            }`}
+          />
         </div>
       )}
+
+      {/* 4. MOBILE-ONLY LABEL: Pentru lizibilitate pe touch */}
+      <div className="absolute bottom-10 left-0 right-0 text-center md:hidden z-30 px-4 opacity-100 pointer-events-none">
+        <h3 className="hero-gotham text-white text-xl font-black tracking-widest uppercase">
+          {item.title}
+        </h3>
+      </div>
     </div>
   );
 }

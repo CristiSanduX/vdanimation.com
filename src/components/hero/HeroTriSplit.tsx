@@ -1,7 +1,15 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
-import VideoPane, { type VideoPaneItem } from "../hero/VideoPane";
 import FullscreenPreviewModal from "../ui/FullscreenPreviewModal";
+
+// --- TYPES ---
+export type VideoPaneItem = {
+  key: string;
+  title: string;
+  poster: string;
+  mp4: string;
+  webm?: string;
+};
 
 const isTouchDevice = () =>
   typeof window !== "undefined" &&
@@ -10,24 +18,9 @@ const isTouchDevice = () =>
 export default function HeroTriSplit() {
   const items: VideoPaneItem[] = useMemo(
     () => [
-      {
-        key: "fantasy",
-        title: "FANTASY",
-        poster: "/media/fantasy-poster.png",
-        mp4: "/media/fantasy.mp4",
-      },
-      {
-        key: "cinematic",
-        title: "CINEMATIC",
-        poster: "/media/cinematic-poster.png",
-        mp4: "/media/cinematic.mp4",
-      },
-      {
-        key: "anime",
-        title: "ANIME",
-        poster: "/media/anime-poster.png",
-        mp4: "/media/anime.mp4",
-      },
+      { key: "fantasy", title: "FANTASY", poster: "/media/fantasy-poster.png", mp4: "/media/fantasy.mp4" },
+      { key: "cinematic", title: "CINEMATIC", poster: "/media/cinematic-poster.png", mp4: "/media/cinematic.mp4" },
+      { key: "anime", title: "ANIME", poster: "/media/anime-poster.png", mp4: "/media/anime.mp4" },
     ],
     []
   );
@@ -35,160 +28,150 @@ export default function HeroTriSplit() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [isTouch, setIsTouch] = useState(false);
   const [modalIndex, setModalIndex] = useState<number | null>(null);
-
   const paneRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     setIsTouch(isTouchDevice());
   }, []);
 
-  // GSAP flex-grow animation (desktop only)
+  // GSAP: Expansiune snappy a coloanelor
   useEffect(() => {
     if (isTouch) return;
-
     const panes = paneRefs.current.filter(Boolean) as HTMLDivElement[];
-    if (panes.length !== items.length) return;
-
-    const baseGrow = 1;
-    const activeGrow = 1.18;
-    const inactiveGrow = 0.91;
-
+    
     panes.forEach((pane, i) => {
-      const grow =
-        activeIndex === null
-          ? baseGrow
-          : i === activeIndex
-          ? activeGrow
-          : inactiveGrow;
+      const isFocused = activeIndex === i;
+      const isAnyFocused = activeIndex !== null;
+      
+      let growValue = 1;
+      if (isAnyFocused) {
+        growValue = isFocused ? 1.25 : 0.85; // Expansiune mai discretă, mai curată
+      }
 
       gsap.to(pane, {
-        flexGrow: grow,
-        duration: 0.45,
-        ease: "power3.out",
+        flexGrow: growValue,
+        duration: 0.45, // Mai rapid
+        ease: "power4.out",
         overwrite: "auto",
       });
     });
-  }, [activeIndex, items.length, isTouch]);
-
-  const navigateTo = (href: string) => {
-    if (typeof window === "undefined") return;
-    window.location.href = href;
-  };
-
-  const onEnter = (i: number) => {
-    if (isTouch) return;
-    setActiveIndex(i);
-  };
-
-  const onLeave = () => {
-    if (isTouch) return;
-    setActiveIndex(null);
-  };
-
-  const onClickPane = (i: number) => {
-    const key = items[i]?.key;
-    if (key === "anime") return navigateTo("/anime");
-    if (key === "cinematic") return navigateTo("/cinematic");
-    if (key === "fantasy") return navigateTo("/fantasy");
-
-    // (fallback) touch modal if you ever add a non-route pane
-    if (isTouch) setModalIndex(i);
-  };
-
-  const onKeyDownPane = (e: React.KeyboardEvent, i: number) => {
-    if (e.key !== "Enter" && e.key !== " ") return;
-    e.preventDefault();
-    onClickPane(i);
-  };
-
-  const modalItem = modalIndex !== null ? items[modalIndex] : null;
+  }, [activeIndex, isTouch]);
 
   return (
-    <>
-      <div
-        className={[
-          // ✅ mobile stack, desktop row
-          "relative flex w-full overflow-hidden",
-          "flex-col md:flex-row",
+    <div className="relative w-full h-[100dvh] overflow-hidden bg-black select-none">
+      {/* Texture discretă */}
+      <div className="pointer-events-none absolute inset-0 z-[100] opacity-[0.03] mix-blend-overlay" 
+           style={{ backgroundImage: `url('https://grainy-gradients.vercel.app/noise.svg')` }} />
 
-          // ✅ mobile: spacing + padding like “stack cards”
-          "gap-3 px-3 py-3 md:gap-0 md:px-0 md:py-0",
+      <div className="relative flex w-full h-full flex-col md:flex-row" onMouseLeave={() => !isTouch && setActiveIndex(null)}>
+        {items.map((item, i) => (
+          <div
+            key={item.key}
+            ref={(el) => { paneRefs.current[i] = el; }}
+            className="relative outline-none cursor-pointer overflow-hidden w-full flex-1 md:h-auto group"
+            onMouseEnter={() => !isTouch && setActiveIndex(i)}
+            onClick={() => window.location.href = `/${item.key}`}
+          >
+            <VideoPane
+              item={item}
+              active={isTouch ? true : activeIndex === i} 
+              isAnyActive={activeIndex !== null}
+            />
+          </div>
+        ))}
 
-          // ✅ IMPORTANT: fill parent height so 3 panes can split perfectly on mobile
-          "h-full",
-        ].join(" ")}
-        onMouseLeave={onLeave}
-      >
-        {items.map((item, i) => {
-          return (
-            <div
-              key={item.key}
-              ref={(el) => {
-                paneRefs.current[i] = el;
-              }}
-              className={[
-                "relative outline-none cursor-pointer",
-                "overflow-hidden",
-
-                // ✅ MOBILE: each pane takes 1/3 of available height
-                "w-full flex-1 min-h-0",
-
-                // ✅ DESKTOP: tri-split
-                "md:flex md:min-w-0 md:flex-1 md:h-auto",
-
-                // ✅ mobile styling
-                "rounded-2xl md:rounded-none",
-                "shadow-[0_20px_80px_rgba(0,0,0,0.55)] md:shadow-none",
-              ].join(" ")}
-              style={{ flexGrow: 1 }}
-              onMouseEnter={() => onEnter(i)}
-              onFocus={() => onEnter(i)}
-              onBlur={onLeave}
-              onClick={() => onClickPane(i)}
-              onKeyDown={(e) => onKeyDownPane(e, i)}
-              role="button"
-              tabIndex={0}
-              aria-label={`Open ${item.title}`}
-            >
-              <div className="absolute inset-0 hero-gotham">
-                <VideoPane
-  item={item}
-  active={isTouch ? true : activeIndex === i} 
-  dim={false}
-  showTitle
-  focal="top"
-/>
-
-              </div>
-
-              {/* extra mobile polish: subtle bottom bar behind title */}
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/60 via-black/10 to-transparent md:hidden" />
-            </div>
-          );
-        })}
-
-        {/* separators — ONLY desktop */}
-        <div className="pointer-events-none absolute inset-y-0 left-1/3 z-40 w-12 -translate-x-1/2 hidden md:block">
-          <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-transparent blur-2xl" />
-        </div>
-        <div className="pointer-events-none absolute inset-y-0 left-2/3 z-40 w-12 -translate-x-1/2 hidden md:block">
-          <div className="absolute inset-0 bg-gradient-to-l from-black/85 via-black/45 to-transparent blur-2xl" />
-        </div>
-
-        {/* global vignette */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0)_0%,rgba(0,0,0,0.55)_72%,rgba(0,0,0,0.88)_100%)]" />
+        {/* Separatoare ultra-fine */}
+        <div className="pointer-events-none absolute inset-y-0 left-1/3 z-30 w-[0.5px] bg-white/5 hidden md:block" />
+        <div className="pointer-events-none absolute inset-y-0 left-2/3 z-30 w-[0.5px] bg-white/5 hidden md:block" />
       </div>
 
-      {/* touch modal (fallback) */}
       <FullscreenPreviewModal
-        open={modalItem !== null}
-        title={modalItem?.title ?? ""}
-        poster={modalItem?.poster ?? ""}
-        mp4={modalItem?.mp4 ?? ""}
-        buyUrl=""
-        priceLabel=""
+        open={modalIndex !== null}
+        title={modalIndex !== null ? items[modalIndex].title : ""}
+        poster={modalIndex !== null ? items[modalIndex].poster : ""}
+        mp4={modalIndex !== null ? items[modalIndex].mp4 : ""}
         onClose={() => setModalIndex(null)}
       />
-    </>
+    </div>
+  );
+}
+
+// --- SUB-COMPONENT: VIDEOPANE (Clean & Snappy) ---
+function VideoPane({ item, active, isAnyActive }: { item: VideoPaneItem; active: boolean; isAnyActive: boolean; }) {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const videoWrapRef = useRef<HTMLDivElement | null>(null);
+  const textGroupRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (active) {
+      video.play().catch(() => {});
+      gsap.to(videoWrapRef.current, { opacity: 1, duration: 0.4 });
+      
+      // ANIMAȚIE: Ridicare ușoară (Lift) la baza ecranului
+      gsap.to(textGroupRef.current, {
+        y: -30, // Se ridică doar 30px
+        duration: 0.4,
+        ease: "power4.out",
+      });
+    } else {
+      video.pause();
+      gsap.to(videoWrapRef.current, { opacity: 0, duration: 0.3 });
+
+      // REVENIRE: Poziția originală
+      gsap.to(textGroupRef.current, {
+        y: 0,
+        duration: 0.4,
+        ease: "power4.out",
+      });
+    }
+  }, [active]);
+
+  return (
+    <div className="relative h-full w-full bg-[#0a0a0a]">
+      {/* Background Media */}
+      <div className={`absolute inset-0 transition-all duration-500 ease-out ${
+        active ? "scale-[1.05] opacity-100" : "scale-100 opacity-40"
+      } ${!active && isAnyActive ? "blur-[2px] grayscale-[0.5]" : ""}`}>
+        <img src={item.poster} className="absolute inset-0 h-full w-full object-cover" alt="" />
+        <div ref={videoWrapRef} className="absolute inset-0 opacity-0">
+          <video ref={videoRef} className="h-full w-full object-cover" muted playsInline loop preload="metadata">
+            <source src={item.mp4} type="video/mp4" />
+          </video>
+        </div>
+      </div>
+
+      {/* Shadow Overlay fin */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 z-10" />
+
+      {/* --- CLEAN TYPOGRAPHY --- */}
+      <div 
+        ref={textGroupRef}
+        className="absolute left-0 right-0 bottom-12 z-20 flex flex-col items-center pointer-events-none px-6 will-change-transform"
+      >
+        <h2 
+          className={`hero-gotham font-black leading-none uppercase transition-all duration-300 tracking-tight ${
+            active ? "text-4xl md:text-[5vw] scale-100" : "text-3xl md:text-4xl scale-95"
+          }`}
+          style={{
+            // Fără gri în interior, contur alb pur
+            color: active ? "white" : "transparent",
+            WebkitTextStroke: active ? "0px" : "1px rgba(255,255,255,0.7)",
+          }}
+        >
+          {item.title}
+        </h2>
+
+        {/* Linie minimalistă */}
+        <div className={`mt-4 h-[1px] bg-white transition-all duration-500 ${active ? "w-12 opacity-100" : "w-0 opacity-0"}`} />
+      </div>
+
+      {/* Mobile fix */}
+      <div className="absolute bottom-8 left-0 right-0 text-center md:hidden z-30 px-4">
+         <h3 className="text-white text-xl font-black uppercase tracking-widest">{item.title}</h3>
+      </div>
+    </div>
   );
 }

@@ -2,11 +2,15 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import FullscreenPreviewModal from "../ui/FullscreenPreviewModal";
 
+/* =========================
+   TYPES
+========================= */
 type SaleItem = {
   key: string;
+  title: string;
+  category: string;
   poster: string;
   mp4: string;
-  webm?: string;
   buyUrl: string;
 };
 
@@ -15,296 +19,174 @@ const isTouchDevice = () =>
   (navigator.maxTouchPoints > 0 || "ontouchstart" in window);
 
 /* =========================
-   SALE CARD
+   SALE CARD (The "Bomba" Version)
 ========================= */
 function SaleCard({
   item,
   active,
-  dim,
   onOpen,
   cta,
 }: {
   item: SaleItem;
   active: boolean;
-  dim: boolean;
   onOpen: () => void;
   cta: "FREE" | "BUY";
 }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const infoRef = useRef<HTMLDivElement | null>(null);
 
-  // ✅ Prewarm once (WebKit-friendly) + keep first frame ready
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
-
-    const prewarm = async () => {
-      try {
-        v.muted = true;
-        // @ts-ignore
-        v.playsInline = true;
-        v.preload = "metadata";
-        v.load();
-
-        // tiny seek to “unlock” first frame (Safari)
-        try {
-          v.currentTime = 0.001;
-        } catch {}
-
-        // don’t autoplay here, only on active
-        v.pause();
-      } catch {}
-    };
-
-    prewarm();
+    v.muted = true;
+    v.playsInline = true;
+    v.preload = "metadata";
   }, []);
 
-  // ✅ Play/pause without resetting time each hover (smoother, less lag)
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
-
-    const play = async () => {
-      try {
-        v.muted = true;
-        // @ts-ignore
-        v.playsInline = true;
-        await v.play();
-      } catch {}
-    };
-
-    if (active) play();
-    else {
-      try {
-        v.pause();
-      } catch {}
+    if (active) {
+      v.play().catch(() => {});
+      gsap.to(infoRef.current, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" });
+    } else {
+      v.pause();
+      gsap.to(infoRef.current, { opacity: 0, y: 10, duration: 0.3, ease: "power2.in" });
     }
   }, [active]);
 
   return (
     <div
-      className="group relative h-full w-full cursor-pointer select-none"
+      className="group relative h-full w-full cursor-pointer select-none overflow-hidden"
       onClick={onOpen}
-      role="button"
-      tabIndex={-1}
     >
       {/* Poster */}
       <img
         src={item.poster}
-        alt="Artwork"
-        className="absolute inset-0 h-full w-full object-cover"
+        alt={item.title}
+        className={`absolute inset-0 h-full w-full object-cover transition-transform duration-[2s] ease-out ${active ? 'scale-110' : 'scale-100'}`}
         draggable={false}
       />
 
-      {/* Video layer (CSS fade) */}
-      <div
-        className={[
-          "absolute inset-0 transition-opacity duration-300 ease-out",
-          active ? "opacity-100" : "opacity-0",
-        ].join(" ")}
-        aria-hidden="true"
-      >
+      {/* Video Layer */}
+      <div className={`absolute inset-0 transition-opacity duration-500 ${active ? "opacity-100" : "opacity-0"}`}>
         <video
           ref={videoRef}
           className="h-full w-full object-cover"
-          muted
-          playsInline
-          loop
-          preload="metadata"
-          poster={item.poster}
+          muted playsInline loop poster={item.poster}
         >
-          {item.webm ? <source src={item.webm} type="video/webm" /> : null}
           <source src={item.mp4} type="video/mp4" />
         </video>
       </div>
 
-      {/* Cleaner cinematic overlays (fără “negru” agresiv) */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-black/5" />
-        <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0)_0%,rgba(0,0,0,0.18)_70%,rgba(0,0,0,0.38)_100%)]" />
+      {/* Overlays Cinematici */}
+      <div className="absolute inset-0 z-10">
+        {/* Rim Light (linia de sus) */}
+        <div className={`absolute inset-x-0 top-0 h-[1px] bg-white/20 transition-opacity duration-500 ${active ? 'opacity-100' : 'opacity-0'}`} />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
       </div>
 
-      {/* Dim (doar overlay, fără filter/blur) */}
-      <div
-        className={[
-          "pointer-events-none absolute inset-0 transition duration-300",
-          dim ? "bg-black/30" : "bg-transparent",
-        ].join(" ")}
-      />
+      {/* Info Content (Editorial Style) */}
+      <div ref={infoRef} className="absolute inset-x-0 bottom-16 z-20 px-6 opacity-0 translate-y-4 pointer-events-none">
+        <span className="text-[9px] tracking-[0.5em] text-white/40 uppercase font-mono">{item.category}</span>
+        <h3 className="text-white text-lg font-black tracking-tighter uppercase leading-none mt-1">{item.title}</h3>
+      </div>
 
-      {/* CTA (FREE / BUY) — no blur, clean glass */}
-      <a
-        href={item.buyUrl}
-        target="_blank"
-        rel="noreferrer"
-        onClick={(e) => e.stopPropagation()}
-        className={[
-          "absolute left-1/2 -translate-x-1/2",
-          "bottom-3 sm:bottom-4",
-          "opacity-0 translate-y-1",
-          "transition duration-300 ease-out",
-          active ? "opacity-100 translate-y-0" : "",
-        ].join(" ")}
-        aria-label={`${cta} artwork`}
-      >
-        <span
-          className={[
-            "inline-flex items-center justify-center rounded-full",
-            "px-5 py-2 sm:px-5 sm:py-2",
-            "text-[11px] sm:text-[12px]",
-            "font-black uppercase tracking-[0.22em]",
-            "text-white",
-            "border border-white/28",
-            // ✅ no backdrop-blur
-            cta === "FREE" ? "bg-white/16" : "bg-white/10",
-            cta === "FREE"
-              ? "shadow-[0_16px_70px_rgba(255,255,255,0.12)]"
-              : "shadow-[0_16px_70px_rgba(0,0,0,0.65)]",
-            "transition duration-300",
-            "hover:bg-white/18 hover:border-white/40",
-            "focus:outline-none focus:ring-2 focus:ring-white/25",
-          ].join(" ")}
-        >
-          {cta}
-        </span>
-      </a>
+      {/* Floating CTA Button */}
+      <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 z-30 transition-all duration-500 ${active ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+        <div className="px-6 py-2 rounded-full border border-white/20 bg-white/10 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.5)] hover:bg-white/20 transition-colors">
+            <span className="text-[10px] font-black tracking-[0.3em] text-white">{cta}</span>
+        </div>
+      </div>
     </div>
   );
 }
 
 /* =========================
-   SALE GRID
+   SALE GRID (The "Top Top" Layout)
 ========================= */
 export default function SaleGrid() {
   const items: SaleItem[] = useMemo(
     () => [
-      { key: "art-01", poster: "/media/sale/art-01.png", mp4: "/media/sale/art-01.mp4", buyUrl: "https://example.com/buy/art-01" },
-      { key: "art-02", poster: "/media/sale/art-02.png", mp4: "/media/sale/art-02.mp4", buyUrl: "https://example.com/buy/art-02" },
-      { key: "art-03", poster: "/media/sale/art-03.png", mp4: "/media/sale/art-03.mp4", buyUrl: "https://example.com/buy/art-03" },
-      { key: "art-04", poster: "/media/sale/art-04.png", mp4: "/media/sale/art-04.mp4", buyUrl: "https://example.com/buy/art-04" },
-      { key: "art-05", poster: "/media/sale/art-05.png", mp4: "/media/sale/art-05.mp4", buyUrl: "https://example.com/buy/art-05" },
-      { key: "art-06", poster: "/media/sale/art-06.png", mp4: "/media/sale/art-06.mp4", buyUrl: "https://example.com/buy/art-06" },
-      { key: "art-07", poster: "/media/sale/art-07.png", mp4: "/media/sale/art-07.mp4", buyUrl: "https://example.com/buy/art-07" },
-      { key: "art-08", poster: "/media/sale/art-08.png", mp4: "/media/sale/art-08.mp4", buyUrl: "https://example.com/buy/art-08" },
-      { key: "art-09", poster: "/media/sale/art-09.png", mp4: "/media/sale/art-09.mp4", buyUrl: "https://example.com/buy/art-09" },
+      { key: "01", title: "Genesis", category: "Abstract", poster: "/media/sale/art-01.png", mp4: "/media/sale/art-01.mp4", buyUrl: "#" },
+      { key: "02", title: "Neon Flow", category: "Motion", poster: "/media/sale/art-02.png", mp4: "/media/sale/art-02.mp4", buyUrl: "#" },
+      { key: "03", title: "Void Star", category: "Space", poster: "/media/sale/art-03.png", mp4: "/media/sale/art-03.mp4", buyUrl: "#" },
+      { key: "04", title: "Cyber P.", category: "Tech", poster: "/media/sale/art-04.png", mp4: "/media/sale/art-04.mp4", buyUrl: "#" },
+      { key: "05", title: "Organic", category: "Nature", poster: "/media/sale/art-05.png", mp4: "/media/sale/art-05.mp4", buyUrl: "#" },
+      { key: "06", title: "Chrome", category: "Metallic", poster: "/media/sale/art-06.png", mp4: "/media/sale/art-06.mp4", buyUrl: "#" },
     ],
     []
   );
 
   const [active, setActive] = useState<number | null>(null);
-  const [isTouch, setIsTouch] = useState(false);
   const [modalIndex, setModalIndex] = useState<number | null>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const [isTouch, setIsTouch] = useState(false);
 
-  // ✅ mobile: first tap activates, second tap opens modal
-  const [armedIndex, setArmedIndex] = useState<number | null>(null);
-
-  const cellRefs = useRef<(HTMLDivElement | null)[]>([]);
-
-  useEffect(() => setIsTouch(isTouchDevice()), []);
-
-  // GSAP scale (desktop hover vibe)
   useEffect(() => {
-    const cells = cellRefs.current.filter(Boolean) as HTMLDivElement[];
-    if (cells.length !== items.length) return;
-
-    cells.forEach((el, i) => {
-      const isA = active === i;
-      const hasA = active !== null;
-
-      gsap.to(el, {
-        scale: hasA ? (isA ? 1.03 : 0.995) : 1,
-        duration: 0.28,
-        ease: "power3.out",
-        overwrite: "auto",
-      });
-
-      el.style.zIndex = hasA ? (isA ? "20" : "1") : "1";
-    });
-  }, [active, items.length]);
-
-  const onEnter = (i: number) => {
-    if (isTouch) return;
-    setActive(i);
-  };
-
-  const onLeave = () => {
-    if (isTouch) return;
-    setActive(null);
-  };
-
-  const onTapCard = (i: number) => {
-    if (!isTouch) {
-      setModalIndex(i);
-      return;
+    setIsTouch(isTouchDevice());
+    
+    // Animație intrare (Stagger)
+    if (gridRef.current) {
+        gsap.fromTo(gridRef.current.children, 
+            { opacity: 0, y: 40 }, 
+            { opacity: 1, y: 0, duration: 1, stagger: 0.1, ease: "expo.out", delay: 0.5 }
+        );
     }
-
-    if (armedIndex === i && active === i) {
-      setModalIndex(i);
-      return;
-    }
-
-    setActive(i);
-    setArmedIndex(i);
-  };
+  }, []);
 
   return (
-    <>
-      <div className="relative min-h-screen w-full bg-black text-white overflow-hidden">
-        {/* ambient */}
-        <div className="pointer-events-none absolute -top-40 left-1/2 h-[560px] w-[560px] -translate-x-1/2 rounded-full bg-white/10 blur-3xl"></div>
-        <div className="pointer-events-none absolute -bottom-56 left-16 h-[460px] w-[460px] rounded-full bg-white/5 blur-3xl"></div>
+    <div className="relative min-h-screen w-full bg-[#050505] overflow-hidden py-24 px-4 md:px-10">
+      
+      {/* 1. PREMIUM GRAIN OVERLAY */}
+      <div className="pointer-events-none absolute inset-0 z-[100] opacity-[0.03] mix-blend-overlay" 
+           style={{ backgroundImage: `url('https://grainy-gradients.vercel.app/noise.svg')` }} />
 
-        <div className="mx-auto max-w-7xl px-6 pt-28 pb-24">
-          <div className="mt-12 grid gap-0 sm:grid-cols-2 xl:grid-cols-3">
-            {items.map((item, i) => {
-              const isA = active === i;
-              const dim = active !== null && !isA;
+      {/* 2. AMBIENT LIGHT LEAKS */}
+      <div className="pointer-events-none absolute -top-40 -left-40 h-[600px] w-[600px] bg-white/5 blur-[120px] rounded-full animate-pulse" />
+      <div className="pointer-events-none absolute -bottom-40 -right-40 h-[600px] w-[600px] bg-white/5 blur-[120px] rounded-full animate-pulse" style={{animationDelay: '2s'}} />
 
-              return (
-                <div
-                  key={item.key}
-                  ref={(el) => {
-                    cellRefs.current[i] = el; // ✅ TS-safe (returns void)
-                  }}
-                  className={[
-                    "relative aspect-[16/10] overflow-hidden bg-black",
-                    "outline-none transform-gpu will-change-transform",
-                    "after:pointer-events-none after:absolute after:inset-0 after:content-['']",
-                    "after:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]",
-                    isA ? "shadow-[0_50px_220px_rgba(0,0,0,0.82)]" : "",
-                  ].join(" ")}
-                  onPointerEnter={() => onEnter(i)}
-                  onPointerLeave={onLeave}
-                  onFocus={() => onEnter(i)}
-                  onBlur={onLeave}
-                  onClick={() => onTapCard(i)}
-                  tabIndex={0}
-                >
-                  <SaleCard
-                    item={item}
-                    active={isA}
-                    dim={dim}
-                    onOpen={() => onTapCard(i)}
-                    cta={i < 3 ? "FREE" : "BUY"}
-                  />
-                </div>
-              );
-            })}
-          </div>
+      <div className="max-w-[1600px] mx-auto">
+        {/* HEADER SECTION (Minimal) */}
+        <div className="mb-12 flex items-baseline justify-between border-b border-white/10 pb-6">
+            <h2 className="text-white/30 text-[10px] tracking-[0.8em] uppercase font-mono">Available Assets</h2>
+            <div className="text-[10px] text-white/50 font-mono tracking-widest">{items.length} PROJECTS</div>
         </div>
 
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0)_0%,rgba(0,0,0,0.55)_72%,rgba(0,0,0,0.9)_100%)]" />
+        {/* THE GRID (Hairline Design) */}
+        <div 
+          ref={gridRef}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 border-l border-t border-white/10"
+        >
+          {items.map((item, i) => {
+            const isA = active === i;
+            return (
+              <div
+                key={item.key}
+                className="relative aspect-[16/11] border-r border-b border-white/10 overflow-hidden"
+                onMouseEnter={() => !isTouch && setActive(i)}
+                onMouseLeave={() => !isTouch && setActive(null)}
+                onClick={() => setModalIndex(i)}
+              >
+                <SaleCard
+                  item={item}
+                  active={isA}
+                  onOpen={() => setModalIndex(i)}
+                  cta={i < 2 ? "FREE" : "BUY"}
+                />
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       <FullscreenPreviewModal
         open={modalIndex !== null}
-        title={modalIndex !== null ? `ARTWORK ${items[modalIndex].key.toUpperCase()}` : ""}
+        title={modalIndex !== null ? items[modalIndex].title : ""}
         poster={modalIndex !== null ? items[modalIndex].poster : ""}
         mp4={modalIndex !== null ? items[modalIndex].mp4 : ""}
-        buyUrl={modalIndex !== null ? items[modalIndex].buyUrl : ""}
-        priceLabel="" // ✅ nu mai afișăm preț aici dacă vrei “BUY only”
         onClose={() => setModalIndex(null)}
       />
-    </>
+    </div>
   );
 }

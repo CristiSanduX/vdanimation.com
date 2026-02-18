@@ -5,12 +5,9 @@ import TopNav from "../components/ui/TopNav.astro";
 
 const ORDER_FORM_URL = "https://forms.gle/KJBeq53H9J3ky4nE6";
 const TRUST_URL = "https://steamcommunity.com/id/tornadovda/allcomments";
-
 const EMAIL = "vdaofficialbusiness@gmail.com";
-
 const DISCORD_USERNAME = "@tornado.vda";
 const STEAM_USERNAME = "@TorNado";
-
 const STEAM_PROFILE_URL = "https://steamcommunity.com/profiles/76561198357608859";
 const DISCORD_LINK = "https://discord.gg/VDzayArUu9";
 
@@ -22,560 +19,231 @@ const VIEW_ULTIMATE = "https://www.deviantart.com/tornadovda/gallery/92325028/ul
 <Layout title="Steam Animated Artwork • VD Animation">
   <TopNav brand="VD ANIMATION" />
 
-  <main class="relative min-h-screen w-full overflow-hidden bg-black text-white">
-    <!-- Ambient (Tailwind only) -->
-    <div class="pointer-events-none absolute inset-0">
-      <div
-        data-float
-        class="absolute -top-56 left-1/2 h-[680px] w-[680px] -translate-x-1/2 rounded-full blur-3xl opacity-[0.18]"
-        style="background: radial-gradient(circle, rgba(255,255,255,0.55), rgba(255,255,255,0) 65%);"
-      ></div>
-      <div
-        data-float
-        class="absolute -bottom-72 left-10 h-[560px] w-[560px] rounded-full blur-3xl opacity-[0.12]"
-        style="background: radial-gradient(circle, rgba(140,160,255,0.55), rgba(255,255,255,0) 70%);"
-      ></div>
-      <div
-        data-float
-        class="absolute top-40 -right-56 h-[520px] w-[520px] rounded-full blur-3xl opacity-[0.10]"
-        style="background: radial-gradient(circle, rgba(255,220,180,0.45), rgba(255,255,255,0) 70%);"
-      ></div>
-
-      <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0)_0%,rgba(0,0,0,0.55)_72%,rgba(0,0,0,0.92)_100%)]"></div>
-      <div class="absolute inset-0 opacity-[0.06] mix-blend-overlay [background:repeating-linear-gradient(to_bottom,rgba(255,255,255,0.35)_0px,rgba(255,255,255,0.35)_1px,transparent_3px,transparent_6px)]"></div>
+  <main class="relative min-h-screen w-full overflow-x-hidden bg-[#030303] text-white selection:bg-white/20">
+    
+    <!-- 🌌 AMBIENT & NOISE LAYER -->
+    <div class="pointer-events-none fixed inset-0 z-0">
+      <!-- Mesh Gradients -->
+      <div class="absolute -top-[10%] -left-[10%] h-[50%] w-[50%] rounded-full bg-blue-600/10 blur-[120px] animate-pulse"></div>
+      <div class="absolute top-[20%] -right-[10%] h-[40%] w-[40%] rounded-full bg-purple-600/10 blur-[120px] animate-bounce" style="animation-duration: 15s"></div>
+      <div class="absolute -bottom-[10%] left-[20%] h-[50%] w-[50%] rounded-full bg-white/5 blur-[120px]"></div>
+      
+      <!-- Film Grain / Noise -->
+      <div class="absolute inset-0 opacity-[0.03] mix-blend-overlay" style="background-image: url('https://grainy-gradients.vercel.app/noise.svg');"></div>
+      
+      <!-- Cursor Glow (Dynamic) -->
+      <div id="cursor-glow" class="absolute h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.03] blur-[100px] transition-opacity duration-500 opacity-0"></div>
     </div>
 
-    <div class="mx-auto max-w-6xl px-6 pt-28 pb-24">
-      <section class="relative text-center">
-        <!-- ✅ HERO PILL -->
-        <div
-          data-reveal
-          class="
-            relative isolate mx-auto inline-flex items-center justify-center
-            rounded-full overflow-hidden
-            border border-white/15 bg-white/5
-            px-7 py-3
-            shadow-[0_30px_140px_rgba(255,255,255,0.06)]
-          "
-        >
-          <div class="relative z-10 hero-gotham text-[22px] sm:text-[32px] font-black uppercase tracking-tight text-white/95">
-            STEAM ANIMATED ARTWORK
-          </div>
-
-          <!-- ✅ sheen FIX: background-position animation (full width always) -->
-          <span
-            data-sheen="dark"
-            aria-hidden="true"
-            class="pointer-events-none absolute inset-0 opacity-[0.30]"
-            style="
-              background-image: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.26) 35%, transparent 70%);
-              background-size: 260% 100%;
-              background-position: -180% 0%;
-            "
-          ></span>
-
-          <span
-            data-glow
-            aria-hidden="true"
-            class="
-              pointer-events-none absolute -inset-8
-              opacity-0 transition-opacity duration-300
-              [background:radial-gradient(420px_140px_at_var(--mx,50%)_var(--my,50%),rgba(255,255,255,0.18),rgba(255,255,255,0)_62%)]
-            "
-          ></span>
+    <div class="relative z-10 mx-auto max-w-7xl px-6 pt-32 pb-24">
+      
+      <!-- 🚀 HERO SECTION -->
+      <section class="text-center mb-24">
+        <div data-reveal class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 mb-8 backdrop-blur-md">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+          </span>
+          <span class="text-[10px] font-black uppercase tracking-[0.3em] text-white/60">Commissions Open</span>
         </div>
 
-        <p data-reveal class="mx-auto mt-5 max-w-3xl text-base text-white/70 sm:text-lg">
-          Premium animated artwork for your Steam profile — cinematic, clean, optimized for Steam.
-          Message me directly and I’ll reply with availability + next steps.
+        <h1 data-reveal class="hero-gotham text-5xl md:text-8xl font-black uppercase tracking-tighter leading-[0.85] mb-6">
+          Steam <span class="text-transparent" style="-webkit-text-stroke: 1px rgba(255,255,255,0.4)">Animated</span><br/> Artwork
+        </h1>
+
+        <p data-reveal class="mx-auto max-w-2xl text-lg text-white/50 font-medium leading-relaxed mb-12">
+          Premium cinematic motion for your Steam profile. Optimized for performance, designed for impact. 
+          Step into the next generation of profile customization.
         </p>
 
-        <!-- CONTACT ROW -->
-        <div data-reveal class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:items-center">
-          <a
-            href={DISCORD_LINK}
-            target="_blank"
-            rel="noreferrer"
-            data-magnetic
-            class="
-              relative isolate overflow-hidden
-              inline-flex w-full sm:w-auto items-center justify-center gap-3
-              rounded-2xl px-6 py-4
-              bg-[#5865F2] text-white
-              shadow-[0_28px_120px_rgba(0,0,0,0.55)]
-              transition-transform duration-300
-              hover:scale-[1.02] active:scale-[0.99]
-            "
-          >
-            <span class="grid h-10 w-10 place-items-center rounded-xl bg-black/20">
-              <img src="/icons/discord.svg" alt="Discord" class="h-5 w-5 opacity-95" />
-            </span>
-            <span class="leading-none text-left">
-              <span class="block text-[11px] font-black uppercase tracking-[0.22em] opacity-90">Discord</span>
-              <span class="block text-sm font-black normal-case tracking-normal">{DISCORD_USERNAME}</span>
-            </span>
-            <span
-              data-glow
-              aria-hidden="true"
-              class="pointer-events-none absolute -inset-8 opacity-0 transition-opacity duration-300
-                     [background:radial-gradient(420px_140px_at_var(--mx,50%)_var(--my,50%),rgba(255,255,255,0.20),rgba(255,255,255,0)_62%)]"
-            ></span>
+        <div data-reveal class="flex flex-wrap items-center justify-center gap-4">
+          <a href={ORDER_FORM_URL} class="group relative px-10 py-5 bg-white text-black font-black uppercase tracking-widest text-xs rounded-2xl transition-all hover:scale-105 active:scale-95 overflow-hidden">
+            <span class="relative z-10">Fill Commission Form</span>
+            <div class="absolute inset-0 bg-neutral-200 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
           </a>
-
-          <a
-            href={STEAM_PROFILE_URL}
-            target="_blank"
-            rel="noreferrer"
-            data-magnetic
-            class="
-              relative isolate overflow-hidden
-              inline-flex w-full sm:w-auto items-center justify-center gap-3
-              rounded-2xl px-6 py-4
-              border border-white/18 bg-white/5 text-white/90
-              shadow-[0_28px_120px_rgba(0,0,0,0.55)]
-              transition-transform duration-300 transition-colors
-              hover:bg-white/10 hover:scale-[1.02] active:scale-[0.99]
-            "
-          >
-            <span class="grid h-10 w-10 place-items-center rounded-xl bg-white/5">
-              <img src="/icons/steam.svg" alt="Steam" class="h-5 w-5 opacity-95" />
-            </span>
-            <span class="leading-none text-left">
-              <span class="block text-[11px] font-black uppercase tracking-[0.22em] opacity-90">Steam</span>
-              <span class="block text-sm font-black normal-case tracking-normal">{STEAM_USERNAME}</span>
-            </span>
-            <span
-              data-glow
-              aria-hidden="true"
-              class="pointer-events-none absolute -inset-8 opacity-0 transition-opacity duration-300
-                     [background:radial-gradient(420px_140px_at_var(--mx,50%)_var(--my,50%),rgba(255,255,255,0.18),rgba(255,255,255,0)_62%)]"
-            ></span>
-          </a>
-
-          <a
-            href={`mailto:${EMAIL}`}
-            class="text-sm font-black uppercase tracking-[0.22em] text-white/70 hover:text-white transition"
-          >
-            Email: {EMAIL}
+          <a href={TRUST_URL} class="px-10 py-5 border border-white/10 bg-white/5 hover:bg-white/10 transition-all font-black uppercase tracking-widest text-[10px] rounded-2xl">
+            Check Trust Score
           </a>
         </div>
-
-        <!-- BIG ACTIONS -->
-        <div data-reveal class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <a
-            href={ORDER_FORM_URL}
-            target="_blank"
-            rel="noreferrer"
-            data-magnetic
-            class="
-              relative isolate overflow-hidden
-              inline-flex w-full sm:w-auto items-center justify-center
-              rounded-2xl px-7 py-4
-              bg-white text-black
-              text-sm font-black uppercase tracking-[0.22em]
-              shadow-[0_26px_140px_rgba(255,255,255,0.10)]
-              transition-transform duration-300
-              hover:scale-[1.02] active:scale-[0.99]
-            "
-          >
-            <span class="relative z-10">FILL THE COMMISSION FORM</span>
-
-            <!-- sheen for white button -->
-            <span
-              data-sheen="light"
-              aria-hidden="true"
-              class="pointer-events-none absolute inset-0 opacity-[0.22]"
-              style="
-                background-image: linear-gradient(120deg, transparent 0%, rgba(0,0,0,0.16) 35%, transparent 70%);
-                background-size: 260% 100%;
-                background-position: -180% 0%;
-              "
-            ></span>
-          </a>
-
-          <!-- ✅ CHECK TRUST SCORE (same FIX) -->
-          <a
-            href={TRUST_URL}
-            target="_blank"
-            rel="noreferrer"
-            data-magnetic
-            class="
-              relative isolate overflow-hidden
-              inline-flex w-full sm:w-auto items-center justify-center
-              rounded-2xl px-7 py-4
-              border border-white/18 bg-white/5 text-white/90
-              text-sm font-black uppercase tracking-[0.22em]
-              transition-transform duration-300 transition-colors
-              hover:bg-white/10 hover:scale-[1.02] active:scale-[0.99]
-            "
-          >
-            <span class="relative z-10">CHECK TRUST SCORE</span>
-
-            <span
-              data-sheen="dark"
-              aria-hidden="true"
-              class="pointer-events-none absolute inset-0 opacity-[0.28]"
-              style="
-                background-image: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.22) 35%, transparent 70%);
-                background-size: 260% 100%;
-                background-position: -180% 0%;
-              "
-            ></span>
-          </a>
-        </div>
-
-        <!-- Formats banner -->
-        <div
-          data-reveal
-          class="
-            relative isolate mx-auto mt-10 max-w-5xl rounded-3xl
-            border border-white/12 bg-white/5 p-6 text-left
-            overflow-hidden
-            transition-transform duration-300
-            hover:-translate-y-1 hover:bg-white/6 hover:border-white/18
-          "
-        >
-          <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">Not limited to Steam</div>
-          <div class="mt-2 text-xl font-black">I take commissions for multiple formats.</div>
-          <p class="mt-2 text-sm text-white/70">
-            If you want something different, just message me with references and your budget — I’ll tell you what’s possible.
-          </p>
-
-          <div class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <div class="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm font-black text-white/85 hover:bg-white/5 hover:border-white/18 transition">
-              Steam Animated Artworks
-            </div>
-            <div class="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm font-black text-white/85 hover:bg-white/5 hover:border-white/18 transition">
-              Stream Packs/Overlays
-            </div>
-            <div class="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm font-black text-white/85 hover:bg-white/5 hover:border-white/18 transition">
-              Logo Animation
-            </div>
-            <div class="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm font-black text-white/85 hover:bg-white/5 hover:border-white/18 transition">
-              Animated Banners/ADS
-            </div>
-            <div class="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm font-black text-white/85 hover:bg-white/5 hover:border-white/18 transition">
-              Lottie/Web Animations
-            </div>
-            <div class="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm font-black text-white/85 hover:bg-white/5 hover:border-white/18 transition">
-              Video Explainers
-            </div>
-          </div>
-
-          <span
-            data-glow
-            aria-hidden="true"
-            class="
-              pointer-events-none absolute -inset-10
-              opacity-0 transition-opacity duration-300
-              [background:radial-gradient(520px_180px_at_var(--mx,50%)_var(--my,50%),rgba(255,255,255,0.14),rgba(255,255,255,0)_66%)]
-            "
-          ></span>
-        </div>
-
-        <div class="mt-10 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent"></div>
       </section>
 
-      <!-- PACKS -->
-      <section class="mt-14 text-center">
-        <div data-reveal class="flex flex-col items-center justify-between gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <h2 class="text-xl font-black uppercase tracking-[0.22em]">Packs</h2>
-          <div class="text-xs uppercase tracking-[0.22em] text-white/55">Price varies by complexity</div>
-        </div>
-
-        <div class="mt-6 grid gap-4 lg:grid-cols-3 text-left">
-          <!-- Classic -->
-          <div
-            data-reveal
-            class="
-              relative isolate overflow-hidden rounded-3xl
-              border border-white/12 bg-white/5 p-7
-              transition-transform duration-300
-              hover:-translate-y-1 hover:bg-white/6 hover:border-white/18
-            "
-          >
-            <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">Classic Pack</div>
-            <div class="mt-3 text-2xl font-black">20–50€</div>
-            <p class="mt-2 text-sm text-white/70">Clean and effective.</p>
-
-            <div class="mt-6 text-sm text-white/75 leading-6">
-              • Character cut<br />
-              • Hair / eyes / breath<br />
-              • Basic limb motion<br />
-              • Clothes motion<br />
-              • Particles / subtle FX
+      <!-- 📦 BENTO FORMATS GRID -->
+      <section class="mb-32">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Big Box -->
+          <div data-reveal class="md:col-span-2 relative overflow-hidden rounded-[2.5rem] border border-white/10 bg-white/5 p-10 hover:border-white/20 transition-all group">
+            <div class="relative z-10">
+                <span class="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 mb-4 block">Versatility</span>
+                <h2 class="text-3xl font-black mb-4 uppercase">Not limited to Steam</h2>
+                <p class="text-white/60 max-w-md">I take commissions for multiple formats. If you want something different, just message me with references.</p>
             </div>
-
-            <a
-              href={VIEW_CLASSIC}
-              target="_blank"
-              rel="noreferrer"
-              data-magnetic
-              class="
-                relative isolate overflow-hidden
-                mt-7 inline-flex w-full items-center justify-center rounded-2xl
-                border border-white/18 bg-white/5 px-6 py-3
-                text-xs font-black uppercase tracking-[0.22em] text-white/90
-                transition-transform duration-300 transition-colors
-                hover:bg-white/10 hover:scale-[1.02] active:scale-[0.99]
-              "
-            >
-              <span class="relative z-10">VIEW CLASSIC</span>
-              <span
-                data-sheen="dark"
-                aria-hidden="true"
-                class="pointer-events-none absolute inset-0 opacity-[0.24]"
-                style="
-                  background-image: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.20) 35%, transparent 70%);
-                  background-size: 260% 100%;
-                  background-position: -180% 0%;
-                "
-              ></span>
-            </a>
+            <!-- Decorative Icon -->
+            <div class="absolute -right-10 -bottom-10 opacity-5 group-hover:opacity-10 transition-opacity">
+                <img src="/icons/steam.svg" class="w-64 h-64 rotate-12" alt=""/>
+            </div>
           </div>
 
-          <!-- Favorite -->
-          <div
-            data-reveal
-            class="
-              relative isolate overflow-hidden rounded-3xl
-              border border-white/18 bg-white/7 p-7
-              transition-transform duration-300
-              hover:-translate-y-1 hover:bg-white/8 hover:border-white/22
-            "
-          >
-            <div class="text-xs font-black uppercase tracking-[0.28em] text-white/75">Favorite Pack</div>
-            <div class="mt-3 text-2xl font-black">70–120€</div>
-            <p class="mt-2 text-sm text-white/70">More detail, stronger impact.</p>
-
-            <div class="mt-6 text-sm text-white/80 leading-6">
-              • Everything in Classic<br />
-              • Detailed animations<br />
-              • High quality polish<br />
-              • Better FX layering
+          <!-- Small boxes -->
+          <div data-reveal class="rounded-[2.5rem] border border-white/10 bg-white/5 p-8 flex flex-col justify-between hover:bg-white/[0.07] transition-all">
+            <div class="h-10 w-10 rounded-xl bg-[#5865F2] flex items-center justify-center mb-6 shadow-lg shadow-[#5865F2]/20">
+                <img src="/icons/discord.svg" class="w-5 h-5" alt=""/>
             </div>
-
-            <div class="mt-6 rounded-2xl border border-white/12 bg-black/25 p-4 text-xs text-white/70">
-              Best choice for most Steam profiles.
+            <div>
+                <div class="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-1">Direct Contact</div>
+                <div class="text-lg font-black">{DISCORD_USERNAME}</div>
             </div>
+          </div>
 
-            <a
-              href={VIEW_FAVORITE}
-              target="_blank"
-              rel="noreferrer"
-              data-magnetic
-              class="
-                relative isolate overflow-hidden
-                mt-7 inline-flex w-full items-center justify-center rounded-2xl
-                border border-white/18 bg-white/5 px-6 py-3
-                text-xs font-black uppercase tracking-[0.22em] text-white/90
-                transition-transform duration-300 transition-colors
-                hover:bg-white/10 hover:scale-[1.02] active:scale-[0.99]
-              "
-            >
-              <span class="relative z-10">VIEW FAVORITE</span>
-              <span
-                data-sheen="dark"
-                aria-hidden="true"
-                class="pointer-events-none absolute inset-0 opacity-[0.24]"
-                style="
-                  background-image: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.20) 35%, transparent 70%);
-                  background-size: 260% 100%;
-                  background-position: -180% 0%;
-                "
-              ></span>
-            </a>
+          <!-- Formats List (Modern Bento) -->
+          {["Stream Packs", "Logo Animation", "Animated ADS", "Lottie Web", "Explainers"].map((f) => (
+            <div data-reveal class="rounded-3xl border border-white/5 bg-white/[0.03] p-6 hover:bg-white/10 transition-all group cursor-default">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-black uppercase tracking-widest">{f}</span>
+                    <span class="opacity-0 group-hover:opacity-100 transition-opacity text-white/40">→</span>
+                </div>
+            </div>
+          ))}
+          
+          <div data-reveal class="rounded-3xl border border-white/10 bg-white/5 p-6 flex items-center justify-center group hover:bg-white hover:text-black transition-all">
+             <a href={`mailto:${EMAIL}`} class="text-[10px] font-black uppercase tracking-[0.3em]">Email: {EMAIL}</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- 💎 PREMIUM PACKS -->
+      <section>
+        <div data-reveal class="flex items-center justify-between mb-12 border-b border-white/10 pb-8">
+            <h2 class="text-2xl font-black uppercase tracking-widest">Pricing Structure</h2>
+            <span class="text-[10px] font-mono text-white/40 uppercase tracking-[0.4em]">2025/2026 EDITION</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Classic -->
+          <div data-reveal class="relative group p-[1px] rounded-[2.5rem] overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="relative h-full rounded-[2.5rem] bg-neutral-900/50 backdrop-blur-xl border border-white/10 p-10 flex flex-col">
+                <div class="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 mb-8">01. Classic</div>
+                <div class="text-4xl font-black mb-2">20–50€</div>
+                <p class="text-white/50 text-sm mb-8 italic">"Clean and effective"</p>
+                <div class="space-y-3 text-sm text-white/70 mb-12 flex-grow">
+                    {["Character cut", "Hair / Eyes / Breath", "Basic limb motion", "Particles / FX"].map(t => (
+                        <div class="flex items-center gap-3">
+                            <span class="h-1 w-1 rounded-full bg-white/30"></span> {t}
+                        </div>
+                    ))}
+                </div>
+                <a href={VIEW_CLASSIC} class="w-full py-4 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] text-center hover:bg-white hover:text-black transition-all">View Classic</a>
+            </div>
+          </div>
+
+          <!-- Favorite (Featured) -->
+          <div data-reveal class="relative group p-[1px] rounded-[2.5rem] overflow-hidden lg:-translate-y-4">
+            <div class="absolute inset-0 bg-gradient-to-b from-blue-500/50 to-transparent"></div>
+            <div class="relative h-full rounded-[2.5rem] bg-white/[0.07] backdrop-blur-2xl border border-white/20 p-10 flex flex-col shadow-2xl shadow-blue-500/10">
+                <div class="absolute top-6 right-10 bg-blue-500 text-[8px] font-black uppercase px-3 py-1 rounded-full">Popular</div>
+                <div class="text-[10px] font-black uppercase tracking-[0.4em] text-blue-400 mb-8">02. Favorite</div>
+                <div class="text-4xl font-black mb-2">70–120€</div>
+                <p class="text-white/70 text-sm mb-8 font-medium">"Detailed animations, stronger impact"</p>
+                <div class="space-y-3 text-sm text-white/90 mb-12 flex-grow font-medium">
+                    {["Everything in Classic", "Detailed animations", "High quality polish", "Complex FX layering"].map(t => (
+                        <div class="flex items-center gap-3">
+                            <span class="h-1 w-1 rounded-full bg-blue-500"></span> {t}
+                        </div>
+                    ))}
+                </div>
+                <a href={VIEW_FAVORITE} class="w-full py-4 bg-white text-black rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] text-center hover:scale-[1.02] transition-all">View Favorite</a>
+            </div>
           </div>
 
           <!-- Ultimate -->
-          <div
-            data-reveal
-            class="
-              relative isolate overflow-hidden rounded-3xl
-              border border-white/12 bg-white/5 p-7
-              transition-transform duration-300
-              hover:-translate-y-1 hover:bg-white/6 hover:border-white/18
-            "
-          >
-            <div class="text-xs font-black uppercase tracking-[0.28em] text-white/60">Ultimate Pack</div>
-            <div class="mt-3 text-2xl font-black">150€+</div>
-            <p class="mt-2 text-sm text-white/70">Maximum quality + advanced work.</p>
-
-            <div class="mt-6 text-sm text-white/75 leading-6">
-              • Best quality pipeline<br />
-              • 3D manipulation (if needed)<br />
-              • Complex FX / camera feeling<br />
-              • Animated desktop wallpaper <span class="text-white/85 font-black">(GIFT)</span><br />
+          <div data-reveal class="relative group p-[1px] rounded-[2.5rem] overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="relative h-full rounded-[2.5rem] bg-neutral-900/50 backdrop-blur-xl border border-white/10 p-10 flex flex-col">
+                <div class="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 mb-8">03. Ultimate</div>
+                <div class="text-4xl font-black mb-2">150€+</div>
+                <p class="text-white/50 text-sm mb-8 italic">"Maximum quality + Advanced 3D"</p>
+                <div class="space-y-3 text-sm text-white/70 mb-12 flex-grow">
+                    {["Complex 3D Manipulation", "Cinematic Camera feeling", "Ultimate FX Pipeline", "Free Wallpaper GIFT"].map(t => (
+                        <div class="flex items-center gap-3">
+                            <span class="h-1 w-1 rounded-full bg-white/30"></span> {t}
+                        </div>
+                    ))}
+                </div>
+                <a href={VIEW_ULTIMATE} class="w-full py-4 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] text-center hover:bg-white hover:text-black transition-all">View Ultimate</a>
             </div>
-
-            <a
-              href={VIEW_ULTIMATE}
-              target="_blank"
-              rel="noreferrer"
-              data-magnetic
-              class="
-                relative isolate overflow-hidden
-                mt-7 inline-flex w-full items-center justify-center rounded-2xl
-                border border-white/18 bg-white/5 px-6 py-3
-                text-xs font-black uppercase tracking-[0.22em] text-white/90
-                transition-transform duration-300 transition-colors
-                hover:bg-white/10 hover:scale-[1.02] active:scale-[0.99]
-              "
-            >
-              <span class="relative z-10">VIEW ULTIMATE</span>
-              <span
-                data-sheen="dark"
-                aria-hidden="true"
-                class="pointer-events-none absolute inset-0 opacity-[0.24]"
-                style="
-                  background-image: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.20) 35%, transparent 70%);
-                  background-size: 260% 100%;
-                  background-position: -180% 0%;
-                "
-              ></span>
-            </a>
           </div>
         </div>
-
-        <div data-reveal class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <a
-            href={DISCORD_LINK}
-            target="_blank"
-            rel="noreferrer"
-            data-magnetic
-            class="
-              relative isolate overflow-hidden
-              inline-flex w-full sm:w-auto items-center justify-center
-              rounded-2xl px-7 py-4
-              bg-[#5865F2] text-white
-              text-sm font-black uppercase tracking-[0.22em]
-              transition-transform duration-300
-              hover:scale-[1.02] active:scale-[0.99]
-            "
-          >
-            Discord {DISCORD_USERNAME}
-          </a>
-
-          <a
-            href={STEAM_PROFILE_URL}
-            target="_blank"
-            rel="noreferrer"
-            data-magnetic
-            class="
-              relative isolate overflow-hidden
-              inline-flex w-full sm:w-auto items-center justify-center
-              rounded-2xl px-7 py-4
-              border border-white/18 bg-white/5 text-white/90
-              text-sm font-black uppercase tracking-[0.22em]
-              transition-transform duration-300 transition-colors
-              hover:bg-white/10 hover:scale-[1.02] active:scale-[0.99]
-            "
-          >
-            Steam {STEAM_USERNAME}
-          </a>
-        </div>
       </section>
+
     </div>
 
-    <div class="fixed inset-x-0 bottom-4 z-50 mx-auto w-[min(680px,calc(100%-2rem))] px-2 sm:hidden">
-      <div class="flex gap-3 rounded-2xl border border-white/12 bg-black/70 p-2 backdrop-blur">
-        <a href={DISCORD_LINK} target="_blank" rel="noreferrer"
-           class="flex-1 rounded-xl bg-[#5865F2] px-4 py-3 text-center text-xs font-black uppercase tracking-[0.22em] text-white transition hover:brightness-110">
-          Discord
-        </a>
-        <a href={STEAM_PROFILE_URL} target="_blank" rel="noreferrer"
-           class="flex-1 rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-center text-xs font-black uppercase tracking-[0.22em] text-white/90 transition hover:bg-white/10">
-          Steam
-        </a>
+    <!-- 📱 MOBILE NAV FIX -->
+    <div class="fixed inset-x-0 bottom-6 z-[100] mx-auto w-[min(400px,calc(100%-2rem))] sm:hidden">
+      <div class="flex gap-3 rounded-3xl border border-white/10 bg-black/80 p-3 backdrop-blur-xl shadow-2xl shadow-black">
+        <a href={DISCORD_LINK} class="flex-1 rounded-2xl bg-[#5865F2] py-4 text-center text-[10px] font-black uppercase tracking-widest text-white transition active:scale-95">Discord</a>
+        <a href={STEAM_PROFILE_URL} class="flex-1 rounded-2xl border border-white/20 bg-white/5 py-4 text-center text-[10px] font-black uppercase tracking-widest text-white transition active:scale-95">Steam</a>
       </div>
     </div>
 
-    <script is:inline>
-      // Reveal
-      const io = new IntersectionObserver((entries) => {
-        entries.forEach((e) => {
-          if (!e.isIntersecting) return;
-          e.target.style.opacity = "1";
-          e.target.style.transform = "translateY(0)";
-        });
-      }, { threshold: 0.12 });
-
-      document.querySelectorAll("[data-reveal]").forEach((el, i) => {
-        el.style.opacity = "0";
-        el.style.transform = "translateY(14px)";
-        el.style.transition =
-          "opacity 800ms cubic-bezier(.2,.8,.2,1), transform 800ms cubic-bezier(.2,.8,.2,1)";
-        el.style.transitionDelay = `${Math.min(i * 70, 420)}ms`;
-        io.observe(el);
-      });
-
-      // Glow tracking
-      const setMXMY = (el, ev) => {
-        const r = el.getBoundingClientRect();
-        const x = ((ev.clientX - r.left) / r.width) * 100;
-        const y = ((ev.clientY - r.top) / r.height) * 100;
-        el.style.setProperty("--mx", x.toFixed(2) + "%");
-        el.style.setProperty("--my", y.toFixed(2) + "%");
-        const glow = el.querySelector("[data-glow]");
-        if (glow) glow.style.opacity = "1";
-      };
-      const clearGlow = (el) => {
-        const glow = el.querySelector("[data-glow]");
-        if (glow) glow.style.opacity = "0";
-      };
-
-      document.querySelectorAll("[data-magnetic], [data-reveal]").forEach((el) => {
-        el.addEventListener("pointermove", (ev) => setMXMY(el, ev));
-        el.addEventListener("pointerleave", () => clearGlow(el));
-      });
-
-      // Magnetic (desktop fine pointer)
-      const isFine = window.matchMedia && window.matchMedia("(pointer:fine)").matches;
-      if (isFine) {
-        document.querySelectorAll("[data-magnetic]").forEach((el) => {
-          el.addEventListener("mousemove", (ev) => {
-            const r = el.getBoundingClientRect();
-            const dx = (ev.clientX - (r.left + r.width / 2)) / r.width;
-            const dy = (ev.clientY - (r.top + r.height / 2)) / r.height;
-            el.style.transform = `translate3d(${dx * 10}px, ${dy * 10}px, 0)`;
-          });
-          el.addEventListener("mouseleave", () => {
-            el.style.transform = "translate3d(0,0,0)";
-          });
-        });
-      }
-
-      // ✅ Sheen FIX: animate background-position (always spans full width)
-      const prefersReduce =
-        window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-      if (!prefersReduce) {
-        document.querySelectorAll("[data-sheen]").forEach((sheen) => {
-          sheen.animate(
-            [
-              { backgroundPosition: "-180% 0%" },
-              { backgroundPosition: "180% 0%" }
-            ],
-            {
-              duration: 4200,
-              iterations: Infinity,
-              easing: "cubic-bezier(.2,.8,.2,1)"
-            }
-          );
-        });
-
-        document.querySelectorAll("[data-float]").forEach((blob, idx) => {
-          const dur = 10000 + idx * 1800;
-          blob.animate(
-            [
-              { transform: blob.style.transform || "translateX(-50%) translateY(0px) scale(1)" },
-              { transform: (blob.style.transform || "translateX(-50%)") + " translateY(14px) scale(1.03)" },
-              { transform: blob.style.transform || "translateX(-50%) translateY(0px) scale(1)" }
-            ],
-            { duration: dur, iterations: Infinity, easing: "cubic-bezier(.2,.8,.2,1)" }
-          );
-        });
-      }
-    </script>
   </main>
+
+  <style>
+    @font-face {
+        font-family: 'Gotham';
+        src: url('/fonts/Gotham-Black.woff2') format('woff2'); /* Asigură-te că ai fontul sau folosește Inter Black ca fallback */
+        font-weight: 900;
+    }
+    .hero-gotham {
+        font-family: 'Inter', sans-serif; /* Fallback */
+        letter-spacing: -0.05em;
+    }
+  </style>
+
+  <script is:inline>
+    // 1. Reveal Elements on Scroll
+    const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = "1";
+          entry.target.style.transform = "translateY(0)";
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll("[data-reveal]").forEach((el, i) => {
+      el.style.opacity = "0";
+      el.style.transform = "translateY(30px)";
+      el.style.transition = "all 0.8s cubic-bezier(0.16, 1, 0.3, 1)";
+      el.style.transitionDelay = `${i * 50}ms`;
+      revealObserver.observe(el);
+    });
+
+    // 2. Cursor Glow Follow
+    const glow = document.getElementById('cursor-glow');
+    window.addEventListener('mousemove', (e) => {
+      if (glow) {
+        glow.style.opacity = "1";
+        glow.style.left = `${e.clientX}px`;
+        glow.style.top = `${e.clientY}px`;
+      }
+    });
+
+    // 3. Magnetic Buttons (Optimized)
+    const isFinePointer = window.matchMedia("(pointer:fine)").matches;
+    if (isFinePointer) {
+      document.querySelectorAll("[data-magnetic]").forEach((el) => {
+        el.addEventListener("mousemove", (e) => {
+          const r = el.getBoundingClientRect();
+          const x = (e.clientX - (r.left + r.width / 2)) * 0.15;
+          const y = (e.clientY - (r.top + r.height / 2)) * 0.15;
+          el.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+        });
+        el.addEventListener("mouseleave", () => {
+          el.style.transform = "translate3d(0,0,0)";
+        });
+      });
+    }
+  </script>
 </Layout>

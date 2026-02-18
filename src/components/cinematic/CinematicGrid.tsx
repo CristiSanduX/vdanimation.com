@@ -1,10 +1,5 @@
-// CinematicGrid.tsx — clean gallery + ghost backdrop (NO dim/blur between items)
-// ✅ 4-per-row on desktop
-// ✅ tighter gaps + bigger feel
-// ✅ WOW hover: active expands/lifts/glows; others stay clean (no dim, no blur)
-// ✅ keeps perf model (lazy src + MAX_PLAYING)
-
 import React, { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
 import FullscreenPreviewModal from "../ui/FullscreenPreviewModal";
 import type { CinematicWork } from "../../data/cinematicWorks";
 
@@ -17,14 +12,7 @@ type PlaybackController = {
   release: (v: HTMLVideoElement) => void;
 };
 
-function ensureVideoSrc(v: HTMLVideoElement) {
-  const anyV = v as HTMLVideoElement & { dataset: { src?: string } };
-  if (!v.src) {
-    const ds = anyV.dataset?.src;
-    if (ds) v.src = ds;
-  }
-}
-
+// --- SUB-COMPONENT: CINEMATIC ITEM ---
 function CinematicItem({
   item,
   onOpen,
@@ -42,22 +30,20 @@ function CinematicItem({
 }) {
   const wrapRef = useRef<HTMLButtonElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const infoRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const v = videoRef.current;
-    if (!v) return;
-    try {
+    if (v) {
       v.muted = true;
       v.playsInline = true;
       v.loop = true;
       v.preload = "metadata";
-    } catch {}
+    }
   }, []);
 
-  // Desktop hover play + focus state
   useEffect(() => {
     if (isTouch) return;
-
     const el = wrapRef.current;
     const v = videoRef.current;
     if (!el || !v) return;
@@ -65,205 +51,149 @@ function CinematicItem({
     const onEnter = () => {
       onHoverChange(item.id);
       controller.requestPlay(v);
+      gsap.to(infoRef.current, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" });
     };
     const onLeave = () => {
       onHoverChange(null);
       controller.release(v);
+      gsap.to(infoRef.current, { opacity: 0, y: 10, duration: 0.3, ease: "power2.in" });
     };
 
     el.addEventListener("mouseenter", onEnter);
     el.addEventListener("mouseleave", onLeave);
-
     return () => {
       el.removeEventListener("mouseenter", onEnter);
       el.removeEventListener("mouseleave", onLeave);
     };
   }, [isTouch, controller, item.id, onHoverChange]);
 
-  // Mobile autoplay via IO (no hover states)
-  useEffect(() => {
-    if (!isTouch) return;
-
-    const el = wrapRef.current;
-    const v = videoRef.current;
-    if (!el || !v) return;
-
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry) return;
-        if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
-          controller.requestPlay(v);
-        } else {
-          controller.release(v);
-        }
-      },
-      { threshold: [0, 0.25, 0.5, 0.6, 0.75, 1] }
-    );
-
-    obs.observe(el);
-    return () => {
-      obs.disconnect();
-      controller.release(v);
-    };
-  }, [isTouch, controller]);
-
   return (
     <button
       ref={wrapRef}
       type="button"
       onClick={() => onOpen(item)}
-      className={[
-        "group relative block w-full outline-none",
-        "overflow-visible", // allow glow/expand
-        isTouch ? "cursor-pointer" : "cursor-zoom-in",
-        // ✅ CLEAN: no dim / no blur / no saturate changes
-      ].join(" ")}
-      aria-label={`Open ${item.title}`}
+      // ✅ "cinematic-card" class is used by GSAP for the reveal
+      className="group relative block w-full outline-none opacity-0 cinematic-card overflow-visible"
     >
       <div
         className={[
-          "relative w-full aspect-[4/5] bg-black overflow-hidden rounded-2xl",
-
-          // ✅ WOW motion (no layout shift)
-          "will-change-[transform,box-shadow]",
-          "transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]",
-
-          // ✅ focus expand + lift; others stay at 1 (clean)
-          focused ? "scale-[1.06] -translate-y-2 z-20" : "scale-100",
-
-          // cinematic shadow
-          "shadow-[0_18px_70px_rgba(0,0,0,0.55)]",
-          focused ? "shadow-[0_45px_180px_rgba(0,0,0,0.85)]" : "",
+          "relative w-full aspect-[4/5] bg-[#0a0a0a] overflow-hidden rounded-xl",
+          "transition-all duration-500 ease-[cubic-bezier(0.2,1,0.2,1)]",
+          focused 
+            ? "scale-[1.04] -translate-y-3 z-30 shadow-[0_30px_100px_rgba(0,0,0,0.8)]" 
+            : "scale-100 shadow-[0_10px_40px_rgba(0,0,0,0.2)]"
         ].join(" ")}
       >
-        {/* cinematic glow ring (neutral / cool) */}
-        <div
-          className={[
-            "pointer-events-none absolute -inset-[2px] rounded-[20px]",
-            "opacity-0 transition-opacity duration-300",
-            focused ? "opacity-100" : "opacity-0",
-          ].join(" ")}
-          style={{
-            background:
-              "radial-gradient(circle at 50% 18%, rgba(255,255,255,0.16), rgba(148,163,184,0.10) 34%, rgba(0,0,0,0) 62%)",
-          }}
-        />
+        {/* RIM LIGHT (Dungă fină de lumină sus) */}
+        <div className={`absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/50 to-transparent z-40 transition-opacity duration-500 ${focused ? "opacity-100" : "opacity-0"}`} />
 
-        {/* Ghost backdrop */}
+        {/* GHOST BACKDROP GLOW */}
         <img
           src={item.poster}
           alt=""
-          aria-hidden="true"
-          className={[
-            "absolute inset-0 h-full w-full",
-            "object-cover scale-[1.08] blur-xl opacity-35",
-            "[transform:translateZ(0)] [backface-visibility:hidden]",
-          ].join(" ")}
-          draggable={false}
-          loading="lazy"
-          decoding="async"
+          className={`absolute inset-0 h-full w-full object-cover scale-[1.3] blur-3xl opacity-10 transition-all duration-1000 ${focused ? "opacity-30 scale-[1.5]" : ""}`}
         />
 
-        {/* ✅ lighter overlay (less “black haze”) */}
-        <div className="absolute inset-0 bg-black/45" />
-
-        {/* Poster */}
+        {/* STATIC POSTER */}
         <img
           src={item.poster}
           alt={item.title}
-          className={[
-            "absolute inset-0 h-full w-full select-none",
-            "object-contain",
-            "opacity-100 transition-opacity duration-300",
-            isTouch ? "" : "group-hover:opacity-0",
-            "[transform:translateZ(0)] [backface-visibility:hidden]",
-          ].join(" ")}
-          loading="lazy"
-          decoding="async"
-          draggable={false}
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${focused || isTouch ? "opacity-0" : "opacity-100"}`}
         />
 
-        {/* Video */}
+        {/* VIDEO ENGINE */}
         <video
           ref={videoRef}
-          data-src={item.mp4}
-          className={[
-            "pointer-events-none absolute inset-0 h-full w-full",
-            "object-contain",
-            "opacity-0 transition-opacity duration-300",
-            isTouch ? "opacity-100" : "group-hover:opacity-100",
-            "will-change-[opacity]",
-            "[transform:translateZ(0)] [backface-visibility:hidden]",
-          ].join(" ")}
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          poster={item.poster}
+          src={item.mp4} // Direct src for simplicity
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${focused || isTouch ? "opacity-100" : "opacity-0"}`}
+          muted loop playsInline preload="metadata"
         />
 
-        {/* Cinematic vignette (subtle, no heavy bottom black) */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0)_0%,rgba(0,0,0,0.22)_70%,rgba(0,0,0,0.42)_100%)]" />
+        {/* INFO OVERLAY */}
+        <div className="absolute inset-0 z-20 flex flex-col justify-end p-5">
+          <div className={`absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent transition-opacity duration-500 ${focused ? "opacity-100" : "opacity-0"}`} />
+          
+          <div ref={infoRef} className="relative z-30 opacity-0 translate-y-3">
+            <p className="text-[8px] tracking-[0.4em] font-mono text-white/40 uppercase mb-1">
+              {item.category || "Selected Work"}
+            </p>
+            <h3 className="text-white text-sm md:text-base font-black tracking-tight uppercase leading-none">
+              {item.title}
+            </h3>
+          </div>
+        </div>
 
-        {/* ultra-subtle frame */}
-        <div className="pointer-events-none absolute inset-0 shadow-[0_0_0_1px_rgba(255,255,255,0.035)]" />
+        {/* HAIRLINE FRAME */}
+        <div className="absolute inset-0 border border-white/5 rounded-xl pointer-events-none" />
       </div>
     </button>
   );
 }
 
+// --- MAIN GRID COMPONENT ---
 export default function CinematicGrid({ items }: { items: CinematicWork[] }) {
   const [isTouch, setIsTouch] = useState(false);
   const [active, setActive] = useState<CinematicWork | null>(null);
   const [hoverId, setHoverId] = useState<string | null>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const playing = useRef<HTMLVideoElement[]>([]);
 
   useEffect(() => {
     setIsTouch(isTouchDevice());
   }, []);
 
+  // ✅ REVEAL ANIMATION - Fixat pentru a nu dispărea cardurile
+  useEffect(() => {
+    if (!gridRef.current) return;
+    
+    const cards = gridRef.current.querySelectorAll('.cinematic-card');
+    
+    // Omorâm orice animație anterioară pentru a preveni bug-uri de stare
+    gsap.killTweensOf(cards);
+    
+    gsap.fromTo(
+      cards,
+      { opacity: 0, y: 50 },
+      { 
+        opacity: 1, 
+        y: 0, 
+        duration: 0.8, 
+        stagger: 0.05, 
+        ease: "power4.out",
+        delay: 0.2,
+        clearProps: "transform" // Păstrăm opacitatea la 1, dar scoatem transformările
+      }
+    );
+  }, [items.length]); // Se declanșează când lista de iteme este încărcată
+
   const MAX_PLAYING = 1;
-  const playing = useRef<HTMLVideoElement[]>([]);
 
   const controller = useRef<PlaybackController>({
     requestPlay: (v) => {
-      ensureVideoSrc(v);
+      if (!v.src) v.load(); // Lazy load trigger
       if (playing.current.includes(v)) return;
 
       while (playing.current.length >= MAX_PLAYING) {
         const old = playing.current.shift();
-        if (!old) continue;
-        try {
-          old.pause();
-        } catch {}
+        if (old) old.pause();
       }
 
       playing.current.push(v);
-
-      try {
-        const p = v.play();
-        if (p && typeof (p as Promise<void>).catch === "function") {
-          (p as Promise<void>).catch(() => {
-            playing.current = playing.current.filter((x) => x !== v);
-          });
-        }
-      } catch {
-        playing.current = playing.current.filter((x) => x !== v);
-      }
+      v.play().catch(() => {});
     },
-
     release: (v) => {
       playing.current = playing.current.filter((x) => x !== v);
-      try {
-        v.pause();
-      } catch {}
+      v.pause();
     },
   });
 
   return (
     <>
-      <div className="w-full px-2 sm:px-3 lg:px-4">
-        {/* ✅ clean grid: only spacing */}
-        <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+      <div className="w-full bg-[#050505] min-h-screen pt-10 pb-20 px-4 md:px-8">
+        <div 
+          ref={gridRef}
+          className="max-w-[1920px] mx-auto grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
+        >
           {items.map((item) => (
             <CinematicItem
               key={item.id}
@@ -283,8 +213,6 @@ export default function CinematicGrid({ items }: { items: CinematicWork[] }) {
         title={active?.title ?? ""}
         poster={active?.poster ?? ""}
         mp4={active?.mp4 ?? ""}
-        buyUrl={active?.buyUrl ?? ""}
-        priceLabel={active?.priceLabel ?? ""}
         onClose={() => setActive(null)}
       />
     </>

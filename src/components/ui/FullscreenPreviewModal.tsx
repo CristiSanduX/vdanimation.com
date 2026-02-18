@@ -1,162 +1,112 @@
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 
+interface FullscreenPreviewModalProps {
+  open: boolean;
+  title: string;
+  poster: string;
+  mp4: string;
+  onClose: () => void;
+}
+
 export default function FullscreenPreviewModal({
   open,
   title,
   poster,
   mp4,
-  buyUrl,
-  priceLabel,
   onClose,
-}: {
-  open: boolean;
-  title: string;
-  poster: string;
-  mp4: string;
-  buyUrl: string;
-  priceLabel?: string;
-  onClose: () => void;
-}) {
-  const wrapRef = useRef<HTMLDivElement | null>(null);
-  const panelRef = useRef<HTMLDivElement | null>(null);
+}: FullscreenPreviewModalProps) {
+  const overlayRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const wrap = wrapRef.current;
-    if (!wrap) return;
-
-    if (open) {
-      gsap.fromTo(
-        wrap,
-        { opacity: 0 },
-        { opacity: 1, duration: 0.25, ease: "power2.out" }
-      );
+    if (!open) {
+      document.body.style.overflow = "unset";
+      return;
     }
-  }, [open]);
 
-  useEffect(() => {
+    // Blocăm scroll-ul paginii din spate
+    document.body.style.overflow = "hidden";
+
+    // Animație de intrare fluidă
+    const tl = gsap.timeline();
+    tl.fromTo(
+      overlayRef.current,
+      { opacity: 0 },
+      { opacity: 1, duration: 0.5, ease: "power2.out" }
+    );
+    tl.fromTo(
+      containerRef.current,
+      { scale: 1.1, opacity: 0 },
+      { scale: 1, opacity: 1, duration: 0.8, ease: "expo.out" },
+      "-=0.3"
+    );
+
+    const v = videoRef.current;
+    if (v) {
+      v.currentTime = 0;
+      v.play().catch(() => {});
+    }
+
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
-    if (open) window.addEventListener("keydown", onKey);
+    window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
-
-  // Ensure UI anti-download flags on the video element (even if props change)
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    try {
-      (v as any).controls = false;
-      (v as any).disablePictureInPicture = true;
-      v.setAttribute("controlsList", "nodownload noremoteplayback");
-    } catch {}
-  }, [open]);
-
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-
-    if (open) {
-      try {
-        v.currentTime = 0;
-      } catch {}
-      const p = v.play();
-      if (p && typeof (p as Promise<void>).catch === "function") {
-        (p as Promise<void>).catch(() => {});
-      }
-    } else {
-      try {
-        v.pause();
-      } catch {}
-    }
-  }, [open]);
 
   if (!open) return null;
 
   return (
     <div
-      ref={wrapRef}
-      className="fixed inset-0 z-[100] bg-black/95"
-      role="dialog"
-      aria-modal="true"
-      // ✅ strongest: block right-click inside modal
-      onContextMenuCapture={(e) => e.preventDefault()}
-      // click outside panel closes
-      onMouseDown={(e) => {
-        if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
-          onClose();
-        }
-      }}
+      ref={overlayRef}
+      className="fixed inset-0 z-[2000] flex items-center justify-center bg-black"
+      onContextMenu={(e) => e.preventDefault()}
     >
-      {/* top close */}
+      {/* 1. FUNDALUL - Click oriunde pe negru închide videoul */}
+      <div className="absolute inset-0 cursor-zoom-out" onClick={onClose} />
+
+      {/* 2. BUTON ÎNCHIDERE (Minimalist - un simplu X fin) */}
       <button
         onClick={onClose}
-        className="absolute right-5 top-5 rounded-full bg-white/10 px-4 py-2 text-xs tracking-[0.22em] uppercase text-white/90 hover:bg-white/15"
-        onContextMenuCapture={(e) => e.preventDefault()}
+        className="absolute top-6 right-6 z-[2010] p-4 group transition-transform hover:scale-110 active:scale-95"
       >
-        Close
+        <div className="relative w-6 h-6 flex items-center justify-center">
+          <div className="absolute w-full h-[1px] bg-white/40 rotate-45 group-hover:bg-white" />
+          <div className="absolute w-full h-[1px] bg-white/40 -rotate-45 group-hover:bg-white" />
+        </div>
       </button>
 
-      <div className="flex h-full w-full flex-col items-center justify-center px-6">
-        <div className="mb-5 text-center text-sm tracking-[0.28em] uppercase text-white/80">
+      {/* 3. CONTAINER VIDEO - Se adaptează la ecran (nu depășește) */}
+      <div
+        ref={containerRef}
+        className="relative z-10 w-full h-full max-w-[95vw] max-h-[90vh] flex flex-col items-center justify-center pointer-events-none"
+      >
+        {/* Titlu discret deasupra videoului */}
+        <div className="mb-4 text-[10px] tracking-[0.6em] text-white/30 uppercase font-mono">
           {title}
         </div>
 
-        <div
-          ref={panelRef}
-          className="relative w-full max-w-5xl overflow-hidden rounded-2xl border border-white/10 bg-white/5"
-          onContextMenuCapture={(e) => e.preventDefault()}
-        >
+        <div className="relative w-full h-full flex items-center justify-center shadow-[0_50px_100px_rgba(0,0,0,0.9)] border border-white/5 rounded-lg overflow-hidden bg-black/40">
           <video
             ref={videoRef}
-            className="h-full w-full object-contain"
+            className="max-w-full max-h-full object-contain pointer-events-auto"
+            poster={poster}
             muted
             playsInline
             loop
-            preload="metadata"
-            poster={poster}
-            controls={false}
+            preload="auto"
             controlsList="nodownload noremoteplayback"
             disablePictureInPicture
-            onContextMenuCapture={(e) => e.preventDefault()}
           >
             <source src={mp4} type="video/mp4" />
           </video>
-
-          {/* ✅ transparent interceptor (extra) */}
-          <div
-            className="absolute inset-0 z-10"
-            onContextMenuCapture={(e) => e.preventDefault()}
-          />
         </div>
 
-        {/* actions */}
-        <div
-          className="mt-6 flex flex-col items-center gap-3 sm:flex-row"
-          onContextMenuCapture={(e) => e.preventDefault()}
-        >
-          <a
-            href={buyUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center justify-center rounded-full bg-white px-7 py-3 text-xs font-black uppercase tracking-[0.22em] text-black transition hover:scale-[1.02]"
-          >
-            Buy{priceLabel ? ` ${priceLabel}` : ""}
-          </a>
-
-          <button
-            onClick={onClose}
-            className="inline-flex items-center justify-center rounded-full border border-white/18 bg-white/5 px-7 py-3 text-xs font-black uppercase tracking-[0.22em] text-white/90 transition hover:bg-white/10"
-          >
-            Back
-          </button>
-        </div>
-
-        {/* tiny helper */}
-        <div className="mt-4 text-[11px] tracking-[0.22em] uppercase text-white/40">
-          Press ESC to close
+        {/* Info Helper jos */}
+        <div className="mt-4 text-[8px] tracking-[0.4em] text-white/20 uppercase">
+          Click background to dismiss
         </div>
       </div>
     </div>
