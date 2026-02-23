@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import FullscreenPreviewModal from "../ui/FullscreenPreviewModal";
 
-// --- TYPES ---
 export type VideoPaneItem = {
   key: string;
   title: string;
@@ -15,6 +14,76 @@ const isTouchDevice = () =>
   typeof window !== "undefined" &&
   (navigator.maxTouchPoints > 0 || "ontouchstart" in window);
 
+function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const onChange = () => setReduced(!!mq.matches);
+    onChange();
+    mq.addEventListener?.("change", onChange);
+    return () => mq.removeEventListener?.("change", onChange);
+  }, []);
+  return reduced;
+}
+
+function useInView<T extends HTMLElement>(threshold = 0.4) {
+  const ref = useRef<T | null>(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof window === "undefined") return;
+
+    const obs = new IntersectionObserver(
+      (entries) => setInView(entries[0]?.isIntersecting ?? false),
+      { threshold }
+    );
+
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+
+  return { ref, inView };
+}
+
+function createPlaybackLimiter(maxPlaying = 1) {
+  const playing = new Set<HTMLVideoElement>();
+  return {
+    requestPlay(v: HTMLVideoElement) {
+      if (playing.has(v)) return;
+      playing.add(v);
+
+      while (playing.size > maxPlaying) {
+        const first = playing.values().next().value as HTMLVideoElement | undefined;
+        if (!first) break;
+        try {
+          first.pause();
+        } catch {}
+        playing.delete(first);
+      }
+
+      v.play().catch(() => {});
+    },
+    stop(v: HTMLVideoElement) {
+      try {
+        v.pause();
+      } catch {}
+      playing.delete(v);
+    },
+    stopAll() {
+      for (const v of playing) {
+        try {
+          v.pause();
+        } catch {}
+      }
+      playing.clear();
+    },
+  };
+}
+
+const playback = createPlaybackLimiter(1);
+
 export default function HeroTriSplit() {
   const items: VideoPaneItem[] = useMemo(
     () => [
@@ -25,6 +94,7 @@ export default function HeroTriSplit() {
     []
   );
 
+  const reducedMotion = usePrefersReducedMotion();
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [isTouch, setIsTouch] = useState(false);
   const [modalIndex, setModalIndex] = useState<number | null>(null);
@@ -34,55 +104,73 @@ export default function HeroTriSplit() {
     setIsTouch(isTouchDevice());
   }, []);
 
-  // GSAP: Expansiune snappy a coloanelor
+  // Subtle flex expand (desktop only). No dark overlays; keep visuals clean.
   useEffect(() => {
-    if (isTouch) return;
+    if (isTouch || reducedMotion) return;
+
     const panes = paneRefs.current.filter(Boolean) as HTMLDivElement[];
-    
     panes.forEach((pane, i) => {
       const isFocused = activeIndex === i;
       const isAnyFocused = activeIndex !== null;
-      
-      let growValue = 1;
-      if (isAnyFocused) {
-        growValue = isFocused ? 1.25 : 0.85; // Expansiune mai discretă, mai curată
-      }
+
+      const grow = !isAnyFocused ? 1 : isFocused ? 1.06 : 0.97; // smaller => less layout churn
 
       gsap.to(pane, {
-        flexGrow: growValue,
-        duration: 0.45, // Mai rapid
+        flexGrow: grow,
+        duration: 0.4,
         ease: "power4.out",
         overwrite: "auto",
       });
     });
-  }, [activeIndex, isTouch]);
+  }, [activeIndex, isTouch, reducedMotion]);
+
+  useEffect(() => () => playback.stopAll(), []);
+
+  const allowVideo = !isTouch && !reducedMotion;
 
   return (
-    <div className="relative w-full h-[100dvh] overflow-hidden bg-black select-none">
-      {/* Texture discretă */}
-      <div className="pointer-events-none absolute inset-0 z-[100] opacity-[0.03] mix-blend-overlay" 
-           style={{ backgroundImage: `url('https://grainy-gradients.vercel.app/noise.svg')` }} />
+    <div
+      className="relative w-full h-[100svh] md:h-[100dvh] overflow-hidden bg-black select-none"
+      onMouseLeave={() => {
+        if (!isTouch) setActiveIndex(null);
+      }}
+    >
+      {/* Removed global dark overlays (no extra dimming) */}
 
-      <div className="relative flex w-full h-full flex-col md:flex-row" onMouseLeave={() => !isTouch && setActiveIndex(null)}>
+      <div className="relative z-0 flex w-full h-full flex-col md:flex-row">
         {items.map((item, i) => (
           <div
             key={item.key}
-            ref={(el) => { paneRefs.current[i] = el; }}
-            className="relative outline-none cursor-pointer overflow-hidden w-full flex-1 md:h-auto group"
-            onMouseEnter={() => !isTouch && setActiveIndex(i)}
-            onClick={() => window.location.href = `/${item.key}`}
+            ref={(el) => {
+              paneRefs.current[i] = el;
+            }}
+            className="relative w-full flex-1 overflow-hidden cursor-pointer outline-none"
+            tabIndex={0}
+            role="link"
+            aria-label={item.title}
+            onMouseEnter={() => {
+              if (allowVideo) setActiveIndex(i);
+            }}
+            onFocus={() => {
+              if (allowVideo) setActiveIndex(i);
+            }}
+            onBlur={() => {
+              if (allowVideo) setActiveIndex(null);
+            }}
+            onClick={(e) => {
+              // keep your modal on Shift+Click
+              if (e.shiftKey) {
+                e.preventDefault();
+                e.stopPropagation();
+                setModalIndex(i);
+                return;
+              }
+              window.location.href = `/${item.key}`;
+            }}
           >
-            <VideoPane
-              item={item}
-              active={isTouch ? true : activeIndex === i} 
-              isAnyActive={activeIndex !== null}
-            />
+            <VideoPane item={item} active={allowVideo ? activeIndex === i : false} isAnyActive={activeIndex !== null} />
           </div>
         ))}
-
-        {/* Separatoare ultra-fine */}
-        <div className="pointer-events-none absolute inset-y-0 left-1/3 z-30 w-[0.5px] bg-white/5 hidden md:block" />
-        <div className="pointer-events-none absolute inset-y-0 left-2/3 z-30 w-[0.5px] bg-white/5 hidden md:block" />
       </div>
 
       <FullscreenPreviewModal
@@ -96,81 +184,145 @@ export default function HeroTriSplit() {
   );
 }
 
-// --- SUB-COMPONENT: VIDEOPANE (Clean & Snappy) ---
-function VideoPane({ item, active, isAnyActive }: { item: VideoPaneItem; active: boolean; isAnyActive: boolean; }) {
+function VideoPane({ item, active, isAnyActive }: { item: VideoPaneItem; active: boolean; isAnyActive: boolean }) {
+  const { ref: rootRef, inView } = useInView<HTMLDivElement>(0.5);
+
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const videoWrapRef = useRef<HTMLDivElement | null>(null);
   const textGroupRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
+  const sourcesAttachedRef = useRef(false);
+  const canPreview = active && inView;
 
-    if (active) {
-      video.play().catch(() => {});
-      gsap.to(videoWrapRef.current, { opacity: 1, duration: 0.4 });
-      
-      // ANIMAȚIE: Ridicare ușoară (Lift) la baza ecranului
-      gsap.to(textGroupRef.current, {
-        y: -30, // Se ridică doar 30px
-        duration: 0.4,
-        ease: "power4.out",
+  const ensureSourcesAttached = () => {
+    const v = videoRef.current;
+    if (!v || sourcesAttachedRef.current) return;
+
+    if (item.webm) {
+      const s = document.createElement("source");
+      s.src = item.webm;
+      s.type = "video/webm";
+      v.appendChild(s);
+    }
+    const s2 = document.createElement("source");
+    s2.src = item.mp4;
+    s2.type = "video/mp4";
+    v.appendChild(s2);
+
+    // don't auto-fetch until needed
+    v.preload = "none";
+    sourcesAttachedRef.current = true;
+  };
+
+  useEffect(() => {
+    const v = videoRef.current;
+    const wrap = videoWrapRef.current;
+    const text = textGroupRef.current;
+    if (!wrap || !text) return;
+
+    gsap.killTweensOf(wrap);
+    gsap.killTweensOf(text);
+
+    // minimal motion (cheap)
+    gsap.to(text, {
+      y: active ? -8 : 0,
+      duration: 0.28,
+      ease: "power4.out",
+      overwrite: "auto",
+    });
+
+    if (!v) return;
+
+    if (canPreview) {
+      ensureSourcesAttached();
+
+      v.preload = "metadata";
+      try {
+        if (v.readyState === 0) v.load();
+      } catch {}
+
+      playback.requestPlay(v);
+
+      gsap.to(wrap, {
+        opacity: 1,
+        duration: 0.22,
+        ease: "power2.out",
+        overwrite: "auto",
       });
     } else {
-      video.pause();
-      gsap.to(videoWrapRef.current, { opacity: 0, duration: 0.3 });
+      playback.stop(v);
 
-      // REVENIRE: Poziția originală
-      gsap.to(textGroupRef.current, {
-        y: 0,
-        duration: 0.4,
-        ease: "power4.out",
+      gsap.to(wrap, {
+        opacity: 0,
+        duration: 0.18,
+        ease: "power2.out",
+        overwrite: "auto",
       });
     }
-  }, [active]);
+
+    return () => {
+      gsap.killTweensOf(wrap);
+      gsap.killTweensOf(text);
+    };
+  }, [active, canPreview]);
 
   return (
-    <div className="relative h-full w-full bg-[#0a0a0a]">
-      {/* Background Media */}
-      <div className={`absolute inset-0 transition-all duration-500 ease-out ${
-        active ? "scale-[1.05] opacity-100" : "scale-100 opacity-40"
-      } ${!active && isAnyActive ? "blur-[2px] grayscale-[0.5]" : ""}`}>
-        <img src={item.poster} className="absolute inset-0 h-full w-full object-cover" alt="" />
-        <div ref={videoWrapRef} className="absolute inset-0 opacity-0">
-          <video ref={videoRef} className="h-full w-full object-cover" muted playsInline loop preload="metadata">
-            <source src={item.mp4} type="video/mp4" />
-          </video>
+    <div ref={rootRef} className="relative h-full w-full bg-black">
+      {/* MEDIA LAYER (no vignettes, no dark overlays, no filters) */}
+      <div
+        className={[
+          "absolute inset-0",
+          "transition-transform duration-700 ease-[cubic-bezier(0.2,0,0.2,1)]",
+          active ? "scale-[1.01]" : "scale-100",
+        ].join(" ")}
+      >
+        <img
+          src={item.poster}
+          alt={item.title}
+          className="absolute inset-0 h-full w-full object-cover"
+          draggable={false}
+          decoding="async"
+          loading="eager"
+        />
+
+        {/* optional: SUPER light dim on inactive (remove entirely if you want pure brightness) */}
+        <div
+          className={[
+            "absolute inset-0 transition-opacity duration-200",
+            !active && isAnyActive ? "opacity-15" : "opacity-0",
+          ].join(" ")}
+          style={{ background: "black" }}
+        />
+
+        <div ref={videoWrapRef} className="absolute inset-0 opacity-0 will-change-opacity">
+          <video ref={videoRef} className="h-full w-full object-cover" muted playsInline loop preload="none" />
         </div>
       </div>
 
-      {/* Shadow Overlay fin */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 z-10" />
-
-      {/* --- CLEAN TYPOGRAPHY --- */}
-      <div 
+      {/* TEXT (kept readable without dark overlays) */}
+      <div
         ref={textGroupRef}
         className="absolute left-0 right-0 bottom-12 z-20 flex flex-col items-center pointer-events-none px-6 will-change-transform"
+        style={{ transform: "translate3d(0,0,0)" }}
       >
-        <h2 
-          className={`hero-gotham font-black leading-none uppercase transition-all duration-300 tracking-tight ${
-            active ? "text-4xl md:text-[5vw] scale-100" : "text-3xl md:text-4xl scale-95"
-          }`}
+        <h2
+          className={[
+            "hero-gotham font-black leading-none uppercase transition-all duration-200",
+            "!tracking-[0em]",
+            active ? "text-3xl md:text-[3.8vw]" : "text-3xl md:text-[3.65vw]",
+          ].join(" ")}
           style={{
-            // Fără gri în interior, contur alb pur
+            // keep your hollow style but slightly stronger stroke for readability
             color: active ? "white" : "transparent",
-            WebkitTextStroke: active ? "0px" : "1px rgba(255,255,255,0.7)",
+            WebkitTextStroke: active ? "0px" : "1.25px rgba(255,255,255,0.75)",
+            letterSpacing: "0em",
+            textShadow: "0 10px 30px rgba(0,0,0,0.35)", // subtle, doesn't dim image
           }}
         >
           {item.title}
         </h2>
 
-        {/* Linie minimalistă */}
-        <div className={`mt-4 h-[1px] bg-white transition-all duration-500 ${active ? "w-12 opacity-100" : "w-0 opacity-0"}`} />
-      </div>
-
-      {/* Mobile fix */}
-      <div className="absolute bottom-8 left-0 right-0 text-center md:hidden z-30 px-4">
-         <h3 className="text-white text-xl font-black uppercase tracking-widest">{item.title}</h3>
+        <div className={`mt-4 h-[1px] bg-white transition-all duration-300 ${active ? "w-12 opacity-100" : "w-0 opacity-0"}`} />
       </div>
     </div>
   );

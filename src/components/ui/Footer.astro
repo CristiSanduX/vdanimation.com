@@ -9,105 +9,65 @@ const LINKS = [
 
 const BUILT_BY_URL = "https://csx.ro";
 const BUILT_BY_LABEL = "Built by CSX";
-const BUILT_BY_LOGO = "/logo/csx.png";
 ---
 
-<footer class="relative mt-32 overflow-hidden bg-black py-16 text-white selection:bg-white/20">
-  
-  <!-- 🌫️ ATMOSPHERIC LIGHT (Lumina de fundal care vine de jos) -->
-  <div class="pointer-events-none absolute bottom-0 left-1/2 h-[300px] w-[600px] -translate-x-1/2 rounded-full bg-white/[0.02] blur-[100px]"></div>
+<footer class="relative overflow-hidden bg-black text-white selection:bg-white/20">
+  <!-- Top separation WITHOUT gap -->
+  <div class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/12 to-transparent"></div>
+  <div class="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/10 via-black/35 to-transparent"></div>
 
-  <div class="relative z-10 mx-auto max-w-7xl px-6">
-    
-    <!-- 📏 TOP DIVIDER (Gradient Line) -->
-    <div class="mb-12 h-[1px] w-full bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+  <!-- Atmospheric glow -->
+  <div class="pointer-events-none absolute bottom-0 left-1/2 h-[320px] w-[720px] -translate-x-1/2 rounded-full bg-white/[0.03] blur-[110px]"></div>
 
-    <div class="flex flex-col items-center gap-12 sm:flex-row sm:items-end sm:justify-between">
-      
-      <!-- LEFT: COPYRIGHT & BRAND -->
-      <div class="flex flex-col items-center gap-4 sm:items-start">
-        <div class="text-[10px] font-black uppercase tracking-[0.4em] text-white/30">
-          VDA Animation Studio
+  <div class="relative z-10 mx-auto max-w-7xl px-6 py-14">
+    <div class="grid grid-cols-1 items-center gap-10 sm:grid-cols-[1fr_auto_1fr]">
+      <!-- LEFT -->
+      <div class="flex flex-col items-center gap-2 sm:items-start">
+        <div class="text-[11px] font-black uppercase !tracking-[0em] text-white/60">
+          VDA Animation
         </div>
-        <div class="text-[11px] font-medium uppercase tracking-[0.2em] text-white/60">
+        <div class="text-[12px] font-medium !tracking-[0em] text-white/40">
           © {YEAR} All rights reserved.
         </div>
       </div>
 
-      <!-- CENTER: NAVIGATION -->
-      <nav class="flex flex-wrap justify-center gap-x-8 gap-y-4">
+      <!-- CENTER -->
+      <nav class="flex flex-wrap justify-center gap-x-8 gap-y-4" aria-label="Footer links">
         {LINKS.map((l) => (
           <a
             href={l.href}
-            class="group relative text-[10px] font-black uppercase tracking-[0.3em] text-white/40 transition-colors hover:text-white"
+            class="group relative text-[11px] font-black uppercase !tracking-[0em] text-white/55 transition-colors duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-0"
           >
             {l.label}
-            <span class="absolute -bottom-1 left-0 h-[1px] w-0 bg-white/40 transition-all duration-300 group-hover:w-full"></span>
+            <span class="pointer-events-none absolute -bottom-1 left-0 h-[1px] w-0 bg-white/55 transition-all duration-300 group-hover:w-full"></span>
           </a>
         ))}
       </nav>
 
-      <!-- RIGHT: BUILT BY (The Badge) -->
-      <div class="flex flex-col items-center gap-3 sm:items-end">
+      <!-- RIGHT -->
+      <div class="flex flex-col items-center gap-2 sm:items-end">
         <a
           href={BUILT_BY_URL}
           target="_blank"
           rel="noreferrer"
-          class="group flex flex-col items-center gap-2 sm:items-end"
+          class="group relative text-[10px] font-bold uppercase !tracking-[0em] text-white/45 transition-colors duration-200 hover:text-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-0 rounded-sm px-1 py-2"
           aria-label={BUILT_BY_LABEL}
         >
-          <span class="text-[9px] font-bold uppercase tracking-[0.5em] text-white/20 transition-colors group-hover:text-white/40">
-            {BUILT_BY_LABEL}
-          </span>
-          {BUILT_BY_LOGO && (
-            <img
-              src={BUILT_BY_LOGO}
-              alt="CSX"
-              class="h-5 w-auto opacity-20 grayscale transition-all duration-500 group-hover:opacity-100 group-hover:grayscale-0"
-              loading="lazy"
-            />
-          )}
+          {BUILT_BY_LABEL}
+          <span class="pointer-events-none absolute -bottom-1 left-1/2 h-[1px] w-0 -translate-x-1/2 bg-white/45 transition-all duration-300 group-hover:w-full"></span>
         </a>
       </div>
-
     </div>
 
-    <!-- 🌌 BOTTOM DECORATION -->
-    <div class="mt-16 flex justify-center">
-        <div class="h-[2px] w-12 rounded-full bg-white/5"></div>
+    <div class="mt-14 flex justify-center">
+      <div class="h-[2px] w-14 rounded-full bg-white/7"></div>
     </div>
   </div>
 </footer>
 
 <style>
-  /* Previne scroll-ul orizontal din cauza blur-ului */
   footer {
     contain: paint;
-  }
-
-  /* Fontul principal pentru footer */
-  footer {
-    font-family: 'Inter', sans-serif;
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   }
 </style>
-
-<script>
-    import gsap from "gsap";
-    import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-    gsap.registerPlugin(ScrollTrigger);
-
-    // Animație subtilă de reveal la scroll
-    window.addEventListener('DOMContentLoaded', () => {
-        gsap.from("footer .z-10", {
-            scrollTrigger: {
-                trigger: "footer",
-                start: "top bottom",
-            },
-            y: 20,
-            opacity: 0,
-            duration: 1.2,
-            ease: "power3.out"
-        });
-    });
-</script>
