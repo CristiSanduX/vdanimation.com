@@ -209,8 +209,8 @@ export default function FantasyGrid({ items }: { items: FantasyWork[] }) {
 
   return (
     <>
-      <div className="w-full bg-[#050505] min-h-screen pt-0 pb-14 px-0 -mt-16 md:-mt-20">
-        <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0">
+      <div className="w-full bg-[#050505] min-h-screen pt-0 pb-14 px-0 -mt-10 md:-mt-20">
+        <div className="grid w-full grid-cols-2 lg:grid-cols-4 gap-0">
           {items.map((item, idx) => (
             <FantasyItem
               key={item.id}

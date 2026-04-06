@@ -45,7 +45,6 @@ function CinematicItem({
   reducedMotion: boolean;
 }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const v = videoRef.current;
@@ -55,30 +54,6 @@ function CinematicItem({
     v.loop = true;
     v.preload = "none";
   }, []);
-
-  // Autoplay pe mobile via Intersection Observer
-  useEffect(() => {
-    if (!isTouch) return;
-    const v = videoRef.current;
-    const el = containerRef.current;
-    if (!v || !el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          if (v.preload !== "metadata") v.preload = "metadata";
-          if (v.readyState === 0) v.load();
-          v.play().catch(() => {});
-        } else {
-          v.pause();
-        }
-      },
-      { threshold: 0.6 }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [isTouch]);
 
   const onEnter = () => {
     if (isTouch) return;
@@ -114,9 +89,8 @@ function CinematicItem({
       aria-label={item.title}
     >
       <div
-        ref={containerRef}
         className={[
-          "relative w-full aspect-video overflow-hidden bg-[#0a0a0a]",
+          "relative w-full aspect-[3/5] overflow-hidden bg-[#0a0a0a]",
           reducedMotion || isTouch
             ? ""
             : "transition-transform duration-200 ease-out will-change-transform",
@@ -129,6 +103,16 @@ function CinematicItem({
           backfaceVisibility: "hidden",
         }}
       >
+        {/* Rim light */}
+        <div
+          className={[
+            "absolute inset-x-0 top-0 h-[1.5px] z-40",
+            "bg-gradient-to-r from-transparent via-white/50 to-transparent",
+            "transition-opacity duration-200",
+            focused ? "opacity-100" : "opacity-0",
+          ].join(" ")}
+        />
+
         {/* Poster */}
         <img
           src={item.poster}
@@ -143,7 +127,7 @@ function CinematicItem({
           draggable={false}
         />
 
-        {/* Video */}
+        {/* Video (desktop hover only) */}
         <video
           ref={videoRef}
           src={item.mp4}
@@ -209,9 +193,8 @@ export default function CinematicGrid({ items }: { items: CinematicWork[] }) {
 
   return (
     <>
-      {/* px-0 + fără max-w = se întinde până în colțuri pe orice rezoluție */}
-      <div className="w-full bg-[#050505] min-h-screen pt-0 pb-14 px-0 -mt-16 md:-mt-20">
-        <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0">
+      <div className="w-full bg-[#050505] min-h-screen pt-0 pb-14 px-0 -mt-10 md:-mt-20">
+        <div className="grid w-full grid-cols-2 lg:grid-cols-4 gap-0">
           {items.map((item, idx) => (
             <CinematicItem
               key={item.id}
@@ -228,8 +211,7 @@ export default function CinematicGrid({ items }: { items: CinematicWork[] }) {
         </div>
       </div>
 
-
-<FullscreenPreviewModal
+      <FullscreenPreviewModal
         open={active !== null}
         title={active?.title ?? ""}
         poster={active?.poster ?? ""}
