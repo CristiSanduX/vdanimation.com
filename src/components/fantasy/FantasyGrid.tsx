@@ -153,6 +153,9 @@ function FantasyItem({
           draggable={false}
         />
 
+        {/* Transparent overlay — blocks right-click on video/image */}
+        <div className="absolute inset-0 z-10" onContextMenu={(e) => e.preventDefault()} />
+
         {/* Video */}
         <video
           ref={videoRef}
@@ -166,9 +169,9 @@ function FantasyItem({
           loop
           playsInline
           preload="none"
+          controlsList="nodownload noremoteplayback"
+          disablePictureInPicture
         />
-
-        {/* NO TITLE / NO TEXT OVERLAY */}
       </div>
     </button>
   );

@@ -1,5 +1,17 @@
 @import "tailwindcss";
 
+/* ─── Prevent drag & save on media ─── */
+img, video {
+  -webkit-user-drag: none;
+  user-drag: none;
+  pointer-events: none;
+}
+
+/* Re-enable pointer events only on interactive wrappers */
+a, button, [role="link"], [role="button"] {
+  pointer-events: auto;
+}
+
 /* Gotham Black */
 @font-face {
   font-family: "Gotham";

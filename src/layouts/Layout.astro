@@ -15,7 +15,7 @@ import CookieBanner from "../components/ui/CookieBanner.astro";
     <title>{title}</title>
   </head>
 
-  <body class="min-h-screen bg-black text-white antialiased">
+  <body class="min-h-screen bg-black text-white antialiased" oncontextmenu="event.preventDefault()">
     <slot />
     <Footer />
     <CookieBanner />
