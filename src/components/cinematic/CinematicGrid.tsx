@@ -116,9 +116,7 @@ function CinematicItem({
       <div
         ref={containerRef}
         className={[
-          // Înălțime bazată pe viewport — se lărgește fluid pe ultrawide
-          "relative w-full overflow-hidden bg-[#0a0a0a]",
-          "h-[60vw] sm:h-[40vw] lg:h-[28vw] xl:h-[24vw] 2xl:h-[20vw]",
+          "relative w-full aspect-video overflow-hidden bg-[#0a0a0a]",
           reducedMotion || isTouch
             ? ""
             : "transition-transform duration-200 ease-out will-change-transform",
@@ -138,11 +136,7 @@ function CinematicItem({
           className={[
             "absolute inset-0 h-full w-full object-cover",
             "transition-opacity duration-200",
-            focused && !isTouch
-              ? "opacity-0"
-              : isTouch
-              ? "opacity-0"
-              : "opacity-100",
+            focused && !isTouch ? "opacity-0" : "opacity-100",
           ].join(" ")}
           decoding="async"
           loading="lazy"
@@ -156,11 +150,7 @@ function CinematicItem({
           className={[
             "absolute inset-0 h-full w-full object-cover",
             "transition-opacity duration-200",
-            focused && !isTouch
-              ? "opacity-100"
-              : isTouch
-              ? "opacity-100"
-              : "opacity-0",
+            focused && !isTouch ? "opacity-100" : "opacity-0",
           ].join(" ")}
           muted
           loop

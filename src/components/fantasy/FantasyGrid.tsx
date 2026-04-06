@@ -79,7 +79,7 @@ function FantasyItem({
       onPointerEnter={onEnter}
       onPointerLeave={onLeave}
       className={[
-        "group relative block w-full outline-none overflow-visible",
+        "group relative block w-full outline-none overflow-hidden",
         reducedMotion ? "opacity-100" : "reveal-card",
       ].join(" ")}
       style={
@@ -94,9 +94,7 @@ function FantasyItem({
       <div
         className={[
           // LONGER
-          "relative w-full aspect-[3/5] overflow-hidden rounded-xl bg-[#0a0a0a]",
-          // baseline (no shadows)
-          "border bg-white/[0.03] border-white/6",
+          "relative w-full aspect-[3/5] overflow-hidden bg-[#0a0a0a]",
           // hover/focus micro-interaction
           reducedMotion || isTouch
             ? ""
@@ -104,7 +102,6 @@ function FantasyItem({
           reducedMotion || isTouch
             ? ""
             : "hover:scale-[1.03] focus-visible:scale-[1.03] active:scale-[1.01]",
-          focused ? "bg-white/[0.06] border-white/12" : "",
         ].join(" ")}
         style={{
           transformOrigin: "center",
@@ -212,8 +209,8 @@ export default function FantasyGrid({ items }: { items: FantasyWork[] }) {
 
   return (
     <>
-      <div className="w-full bg-[#050505] min-h-screen pt-0 pb-14 px-4 md:px-8 -mt-16 md:-mt-20">
-        <div className="max-w-[1920px] mx-auto grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+      <div className="w-full bg-[#050505] min-h-screen pt-0 pb-14 px-0 -mt-16 md:-mt-20">
+        <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0">
           {items.map((item, idx) => (
             <FantasyItem
               key={item.id}
