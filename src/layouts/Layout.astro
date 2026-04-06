@@ -2,6 +2,7 @@
 import "../styles/global.css";
 const { title = "VD Animation" } = Astro.props;
 import Footer from "../components/ui/Footer.astro";
+import CookieBanner from "../components/ui/CookieBanner.astro";
 ---
 
 <!doctype html>
@@ -17,5 +18,6 @@ import Footer from "../components/ui/Footer.astro";
   <body class="min-h-screen bg-black text-white antialiased">
     <slot />
     <Footer />
+    <CookieBanner />
   </body>
 </html>

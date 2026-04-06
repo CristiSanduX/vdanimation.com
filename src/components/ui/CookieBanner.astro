@@ -1,0 +1,83 @@
+---
+// CookieBanner.astro — dark, minimal, consistent with site design
+// GA loads ONLY after user accepts
+---
+
+<div
+  id="cookie-banner"
+  class="fixed bottom-0 left-0 right-0 z-[999] hidden"
+>
+  <div class="bg-[#0d0d0d] border-t border-white/10 px-5 py-4 sm:px-8">
+    <div class="mx-auto max-w-[900px] flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8">
+      <p class="text-[12px] text-white/50 leading-relaxed flex-1">
+        This site uses cookies to analyze traffic and improve your experience.
+        <a href="/privacy" class="underline underline-offset-2 text-white/60 hover:text-white transition-colors">Privacy Policy</a>
+      </p>
+      <div class="flex gap-3 shrink-0">
+        <button
+          id="cookie-decline"
+          class="px-4 py-2 text-[11px] font-black uppercase tracking-[0.2em] text-white/35 hover:text-white/60 transition-colors"
+        >
+          Decline
+        </button>
+        <button
+          id="cookie-accept"
+          class="px-5 py-2 text-[11px] font-black uppercase tracking-[0.2em] bg-white text-black hover:bg-white/90 transition-colors"
+        >
+          Accept
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const GA_ID = "G-8YYN9KK3VJ";
+  const STORAGE_KEY = "vda_cookie_consent";
+
+  function loadGA() {
+    if (document.getElementById("ga-script")) return;
+    const s = document.createElement("script");
+    s.id = "ga-script";
+    s.async = true;
+    s.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+    document.head.appendChild(s);
+    (window as any).dataLayer = (window as any).dataLayer || [];
+    function gtag(...args: any[]) { (window as any).dataLayer.push(args); }
+    gtag("js", new Date());
+    gtag("config", GA_ID);
+    (window as any).gtag = gtag;
+  }
+
+  function hideBanner() {
+    const banner = document.getElementById("cookie-banner");
+    if (banner) banner.style.display = "none";
+  }
+
+  function showBanner() {
+    const banner = document.getElementById("cookie-banner");
+    if (banner) banner.style.display = "block";
+  }
+
+  // Check existing consent
+  const consent = localStorage.getItem(STORAGE_KEY);
+  if (consent === "accepted") {
+    loadGA();
+  } else if (consent === "declined") {
+    // do nothing
+  } else {
+    // Show banner after short delay so page renders first
+    setTimeout(showBanner, 800);
+  }
+
+  document.getElementById("cookie-accept")?.addEventListener("click", () => {
+    localStorage.setItem(STORAGE_KEY, "accepted");
+    hideBanner();
+    loadGA();
+  });
+
+  document.getElementById("cookie-decline")?.addEventListener("click", () => {
+    localStorage.setItem(STORAGE_KEY, "declined");
+    hideBanner();
+  });
+</script>
