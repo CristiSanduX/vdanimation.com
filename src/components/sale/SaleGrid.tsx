@@ -222,7 +222,7 @@ function SaleCard({
           "transition-[opacity,transform] duration-200 ease-out",
           active ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2",
         ].join(" ")}
-        style={{ willChange: "opacity, transform" }}
+
       >
         <div className="text-[9px] font-mono uppercase tracking-[0.55em] text-white/40">
           {item.category}
@@ -400,26 +400,8 @@ export default function SaleGrid() {
         </div>
       </div>
 
-      {/* Reveal (no JS timeline) */}
-      <style>{`
-        @media (prefers-reduced-motion: no-preference) {
-          .reveal-card {
-            opacity: 0;
-            transform: translate3d(0, 14px, 0);
-            animation: revealIn 520ms cubic-bezier(0.2, 1, 0.2, 1) forwards;
-            animation-delay: var(--d, 0ms);
-            will-change: opacity, transform;
-          }
-          @keyframes revealIn {
-            to {
-              opacity: 1;
-              transform: translate3d(0, 0, 0);
-            }
-          }
-        }
-      `}</style>
 
-      <FullscreenPreviewModal
+<FullscreenPreviewModal
         open={modalIndex !== null}
         title="" // you requested: no title displayed
         poster={modalIndex !== null ? items[modalIndex].poster : ""}

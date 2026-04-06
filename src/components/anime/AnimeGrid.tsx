@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import FullscreenPreviewModal from "../ui/FullscreenPreviewModal";
 import type { AnimeWork } from "../../data/animeWorks";
 
@@ -210,13 +210,11 @@ export default function AnimeGrid({ items }: { items: AnimeWork[] }) {
     return () => controller.current.stopAll();
   }, []);
 
-  const ordered = useMemo(() => items, [items]);
-
   return (
     <>
       <div className="w-full bg-[#050505] min-h-screen pt-0 pb-14 px-4 md:px-8 -mt-16 md:-mt-20">
         <div className="max-w-[1920px] mx-auto grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-          {ordered.map((item, idx) => (
+          {items.map((item, idx) => (
             <AnimeItem
               key={item.id}
               item={item}
@@ -232,25 +230,8 @@ export default function AnimeGrid({ items }: { items: AnimeWork[] }) {
         </div>
       </div>
 
-      <style>{`
-        @media (prefers-reduced-motion: no-preference) {
-          .reveal-card {
-            opacity: 0;
-            transform: translate3d(0, 14px, 0);
-            animation: revealIn 520ms cubic-bezier(0.2, 1, 0.2, 1) forwards;
-            animation-delay: var(--d, 0ms);
-            will-change: opacity, transform;
-          }
-          @keyframes revealIn {
-            to {
-              opacity: 1;
-              transform: translate3d(0, 0, 0);
-            }
-          }
-        }
-      `}</style>
 
-      <FullscreenPreviewModal
+<FullscreenPreviewModal
         open={active !== null}
         title={active?.title ?? ""}
         poster={active?.poster ?? ""}
