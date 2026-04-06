@@ -45,6 +45,7 @@ function AnimeItem({
   reducedMotion: boolean;
 }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   // Keep video cold until hover (desktop)
   useEffect(() => {
@@ -55,6 +56,28 @@ function AnimeItem({
     v.loop = true;
     v.preload = "none";
   }, []);
+
+  // Autoplay on scroll for mobile
+  useEffect(() => {
+    if (!isTouch || reducedMotion) return;
+    const v = videoRef.current;
+    const el = containerRef.current;
+    if (!v || !el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          if (v.preload !== "metadata") v.preload = "metadata";
+          if (v.readyState === 0) v.load();
+          v.play().catch(() => {});
+        } else {
+          v.pause();
+        }
+      },
+      { threshold: 0.5 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [isTouch, reducedMotion]);
 
   const onEnter = () => {
     if (isTouch) return;
@@ -92,13 +115,12 @@ function AnimeItem({
       aria-label={item.title}
     >
       <div
+        ref={containerRef}
         className={[
-          // LONGER
           "relative w-full aspect-[3/5] overflow-hidden bg-[#0a0a0a]",
-          // hover/focus micro-interaction
           reducedMotion || isTouch
             ? ""
-            : "transition-[transform,background-color,border-color] duration-200 ease-out will-change-transform",
+            : "transition-[transform] duration-200 ease-out will-change-transform",
           reducedMotion || isTouch
             ? ""
             : "hover:scale-[1.03] focus-visible:scale-[1.03] active:scale-[1.01]",
@@ -108,7 +130,7 @@ function AnimeItem({
           backfaceVisibility: "hidden",
         }}
       >
-        {/* Rim light (cheap) */}
+        {/* Rim light */}
         <div
           className={[
             "absolute inset-x-0 top-0 h-[1.5px] z-40",
@@ -125,21 +147,21 @@ function AnimeItem({
           className={[
             "absolute inset-0 h-full w-full object-cover",
             "transition-opacity duration-200",
-            focused && !isTouch ? "opacity-0" : "opacity-100",
+            isTouch || (focused && !isTouch) ? "opacity-0" : "opacity-100",
           ].join(" ")}
           decoding="async"
           loading="lazy"
           draggable={false}
         />
 
-        {/* Video (desktop hover only) */}
+        {/* Video */}
         <video
           ref={videoRef}
           src={item.mp4}
           className={[
             "absolute inset-0 h-full w-full object-cover",
             "transition-opacity duration-200",
-            focused && !isTouch ? "opacity-100" : "opacity-0",
+            isTouch || (focused && !isTouch) ? "opacity-100" : "opacity-0",
           ].join(" ")}
           muted
           loop

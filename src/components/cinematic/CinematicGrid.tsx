@@ -45,6 +45,7 @@ function CinematicItem({
   reducedMotion: boolean;
 }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const v = videoRef.current;
@@ -54,6 +55,28 @@ function CinematicItem({
     v.loop = true;
     v.preload = "none";
   }, []);
+
+  // Autoplay on scroll for mobile
+  useEffect(() => {
+    if (!isTouch || reducedMotion) return;
+    const v = videoRef.current;
+    const el = containerRef.current;
+    if (!v || !el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          if (v.preload !== "metadata") v.preload = "metadata";
+          if (v.readyState === 0) v.load();
+          v.play().catch(() => {});
+        } else {
+          v.pause();
+        }
+      },
+      { threshold: 0.5 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [isTouch, reducedMotion]);
 
   const onEnter = () => {
     if (isTouch) return;
@@ -89,6 +112,7 @@ function CinematicItem({
       aria-label={item.title}
     >
       <div
+        ref={containerRef}
         className={[
           "relative w-full aspect-[3/5] overflow-hidden bg-[#0a0a0a]",
           reducedMotion || isTouch
@@ -127,14 +151,14 @@ function CinematicItem({
           draggable={false}
         />
 
-        {/* Video (desktop hover only) */}
+        {/* Video */}
         <video
           ref={videoRef}
           src={item.mp4}
           className={[
             "absolute inset-0 h-full w-full object-cover",
             "transition-opacity duration-200",
-            focused && !isTouch ? "opacity-100" : "opacity-0",
+            isTouch || (focused && !isTouch) ? "opacity-100" : "opacity-0",
           ].join(" ")}
           muted
           loop
