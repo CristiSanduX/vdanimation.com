@@ -26,7 +26,6 @@ function isTouchDevice() {
 
 function usePrefersReducedMotion() {
   const [reduced, setReduced] = useState(false);
-
   useEffect(() => {
     if (typeof window === "undefined") return;
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -35,7 +34,6 @@ function usePrefersReducedMotion() {
     mq.addEventListener?.("change", onChange);
     return () => mq.removeEventListener?.("change", onChange);
   }, []);
-
   return reduced;
 }
 
@@ -46,12 +44,10 @@ function useInView<T extends HTMLElement>(threshold = 0.35) {
   useEffect(() => {
     const el = ref.current;
     if (!el || typeof window === "undefined") return;
-
     const obs = new IntersectionObserver(
       (entries) => setInView(entries[0]?.isIntersecting ?? false),
       { threshold }
     );
-
     obs.observe(el);
     return () => obs.disconnect();
   }, [threshold]);
@@ -76,14 +72,11 @@ export default function VideoPane({
   const touch = useMemo(() => isTouchDevice(), []);
 
   const objectPosClass = focal === "top" ? "object-[50%_15%]" : "object-center";
+  const sourcesAttachedRef = useRef(false);
 
-  // Attach sources only when needed (once)
   const ensureSourcesAttached = () => {
     const video = videoRef.current;
-    if (!video) return;
-
-    const hasAnySource = video.querySelector("source") !== null;
-    if (hasAnySource) return;
+    if (!video || sourcesAttachedRef.current) return;
 
     if (item.webm) {
       const s = document.createElement("source");
@@ -91,13 +84,13 @@ export default function VideoPane({
       s.type = "video/webm";
       video.appendChild(s);
     }
-
     const s2 = document.createElement("source");
     s2.src = item.mp4;
     s2.type = "video/mp4";
     video.appendChild(s2);
 
     video.preload = "none";
+    sourcesAttachedRef.current = true;
   };
 
   const canPreview = active && inView && !touch && !reducedMotion;
@@ -111,7 +104,6 @@ export default function VideoPane({
     gsap.killTweensOf(wrap);
     gsap.killTweensOf(textGroup);
 
-    // Keep your "lift" but lighter for less motion cost
     gsap.to(textGroup, {
       y: active ? "-28vh" : "0vh",
       duration: active ? 0.9 : 0.75,
@@ -125,29 +117,22 @@ export default function VideoPane({
       ensureSourcesAttached();
       video.preload = "metadata";
 
-      try {
-        // @ts-ignore
-        if (video.readyState === 0) video.load();
-      } catch {}
+      if (video.readyState === 0) {
+        video.load();
+        video.addEventListener("loadedmetadata", () => video.play().catch(() => {}), { once: true });
+      } else {
+        video.play().catch(() => {});
+      }
 
-      video.play().catch(() => {});
       gsap.to(wrap, { opacity: 1, duration: 0.35, ease: "power2.out", overwrite: "auto" });
     } else {
-      try {
-        video.pause();
-      } catch {}
+      try { video.pause(); } catch {}
       gsap.to(wrap, { opacity: 0, duration: 0.25, ease: "power2.out", overwrite: "auto" });
     }
-
-    return () => {
-      gsap.killTweensOf(wrap);
-      gsap.killTweensOf(textGroup);
-    };
   }, [active, canPreview]);
 
   return (
     <div ref={rootRef} className="relative h-full w-full overflow-hidden bg-black">
-      {/* MEDIA LAYER: minimal zoom */}
       <div
         className={[
           "absolute inset-0 transition-transform duration-[800ms] ease-[cubic-bezier(0.2,0,0.2,1)]",
@@ -161,9 +146,9 @@ export default function VideoPane({
           draggable={false}
           decoding="async"
           loading="eager"
+          fetchPriority="high"
         />
 
-        {/* VERY LIGHT de-emphasis (optional); remove entirely if you want 100% bright always */}
         <div
           className={[
             "absolute inset-0 transition-opacity duration-200",
@@ -173,6 +158,11 @@ export default function VideoPane({
         />
 
         <div ref={videoWrapRef} className="absolute inset-0 opacity-0 will-change-opacity">
+          {/* Strat transparent — blochează context menu pe video */}
+          <div
+            className="absolute inset-0 z-10"
+            onContextMenu={(e) => e.preventDefault()}
+          />
           <video
             ref={videoRef}
             className={`h-full w-full object-cover ${objectPosClass}`}
@@ -180,14 +170,14 @@ export default function VideoPane({
             playsInline
             loop
             preload="none"
+            controlsList="nodownload noremoteplayback"
+            disablePictureInPicture
           />
         </div>
       </div>
 
-      {/* LIGHT text assist only (NOT dark wash). If you want zero overlay, delete this div. */}
       <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
 
-      {/* TEXT GROUP */}
       {showTitle && (
         <div
           ref={textGroupRef}
@@ -207,7 +197,6 @@ export default function VideoPane({
             style={{
               color: active ? "white" : "transparent",
               WebkitTextStroke: active ? "0px" : "1.3px rgba(255,255,255,0.8)",
-              // shadow helps readability WITHOUT dimming the media
               textShadow: "0 12px 34px rgba(0,0,0,0.35)",
               letterSpacing: "0em",
             }}
@@ -224,9 +213,11 @@ export default function VideoPane({
         </div>
       )}
 
-      {/* Mobile-only label (0 letter spacing) */}
       <div className="absolute bottom-10 left-0 right-0 text-center md:hidden z-30 px-4 opacity-100 pointer-events-none">
-        <h3 className="hero-gotham text-white text-2xl font-black uppercase !tracking-[0em]" style={{ letterSpacing: "0em" }}>
+        <h3
+          className="hero-gotham text-white text-2xl font-black uppercase !tracking-[0em]"
+          style={{ letterSpacing: "0em" }}
+        >
           {item.title}
         </h3>
       </div>

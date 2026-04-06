@@ -1,11 +1,4 @@
-// AnimeGrid.tsx — clean gallery + ghost backdrop (NO dim/blur between items)
-// ✅ 4-per-row on desktop
-// ✅ tighter gaps + bigger feel
-// ✅ WOW hover: active expands/lifts/glows; others stay clean (no dim, no blur)
-// ✅ keeps perf model (lazy src + MAX_PLAYING) + NO zoom inside media (only container transforms)
-// ✅ UI anti-download: blocks right-click on grid + cards + video, nodownload attrs, overlay interceptor
-
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import FullscreenPreviewModal from "../ui/FullscreenPreviewModal";
 import type { AnimeWork } from "../../data/animeWorks";
 
@@ -13,313 +6,255 @@ const isTouchDevice = () =>
   typeof window !== "undefined" &&
   (navigator.maxTouchPoints > 0 || "ontouchstart" in window);
 
+function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const onChange = () => setReduced(!!mq.matches);
+    onChange();
+    mq.addEventListener?.("change", onChange);
+    return () => mq.removeEventListener?.("change", onChange);
+  }, []);
+  return reduced;
+}
+
 type PlaybackController = {
   requestPlay: (v: HTMLVideoElement) => void;
   release: (v: HTMLVideoElement) => void;
+  stopAll: () => void;
 };
-
-function ensureVideoSrc(v: HTMLVideoElement) {
-  const anyV = v as HTMLVideoElement & { dataset: { src?: string } };
-  if (!v.src) {
-    const ds = anyV.dataset?.src;
-    if (ds) v.src = ds;
-  }
-}
 
 function AnimeItem({
   item,
+  index,
   onOpen,
   isTouch,
   controller,
   focused,
   onHoverChange,
+  reducedMotion,
 }: {
   item: AnimeWork;
+  index: number;
   onOpen: (item: AnimeWork) => void;
   isTouch: boolean;
   controller: PlaybackController;
   focused: boolean;
   onHoverChange: (id: string | null) => void;
+  reducedMotion: boolean;
 }) {
-  const wrapRef = useRef<HTMLButtonElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  // init
+  // Keep video cold until hover (desktop)
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
-    try {
-      v.muted = true;
-      v.playsInline = true;
-      v.loop = true;
-      v.preload = "metadata";
-
-      // UI anti-download flags
-      (v as any).controls = false;
-      (v as any).disablePictureInPicture = true;
-      v.setAttribute("controlsList", "nodownload noremoteplayback");
-    } catch {}
+    v.muted = true;
+    v.playsInline = true;
+    v.loop = true;
+    v.preload = "none";
   }, []);
 
-  // Desktop hover: play/pause + focus
-  useEffect(() => {
+  const onEnter = () => {
     if (isTouch) return;
-
-    const el = wrapRef.current;
+    onHoverChange(item.id);
     const v = videoRef.current;
-    if (!el || !v) return;
+    if (v) controller.requestPlay(v);
+  };
 
-    const onEnter = () => {
-      onHoverChange(item.id);
-      controller.requestPlay(v);
-    };
-    const onLeave = () => {
-      onHoverChange(null);
-      controller.release(v);
-    };
-
-    el.addEventListener("mouseenter", onEnter);
-    el.addEventListener("mouseleave", onLeave);
-
-    return () => {
-      el.removeEventListener("mouseenter", onEnter);
-      el.removeEventListener("mouseleave", onLeave);
-    };
-  }, [isTouch, controller, item.id, onHoverChange]);
-
-  // Mobile autoplay via IO
-  useEffect(() => {
-    if (!isTouch) return;
-
-    const el = wrapRef.current;
+  const onLeave = () => {
+    if (isTouch) return;
+    onHoverChange(null);
     const v = videoRef.current;
-    if (!el || !v) return;
+    if (v) controller.release(v);
+  };
 
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry) return;
-        if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
-          controller.requestPlay(v);
-        } else {
-          controller.release(v);
-        }
-      },
-      { threshold: [0, 0.25, 0.5, 0.6, 0.75, 1] }
-    );
-
-    obs.observe(el);
-    return () => {
-      obs.disconnect();
-      controller.release(v);
-    };
-  }, [isTouch, controller]);
+  const delayMs = Math.min(index * 26, 240);
 
   return (
     <button
-      ref={wrapRef}
       type="button"
       onClick={() => onOpen(item)}
-      onContextMenuCapture={(e) => e.preventDefault()}
+      onPointerEnter={onEnter}
+      onPointerLeave={onLeave}
       className={[
-        "group relative block w-full outline-none",
-        "overflow-visible",
-        isTouch ? "cursor-pointer" : "cursor-zoom-in",
-        // ✅ CLEAN: no dim / no blur / no saturate changes on other items
+        "group relative block w-full outline-none overflow-visible",
+        reducedMotion ? "opacity-100" : "reveal-card",
       ].join(" ")}
-      aria-label={`Open ${item.title}`}
+      style={
+        reducedMotion
+          ? undefined
+          : ({
+              ["--d" as any]: `${delayMs}ms`,
+            } as React.CSSProperties)
+      }
+      aria-label={item.title}
     >
       <div
         className={[
-          "relative w-full aspect-[4/5] bg-black overflow-hidden rounded-2xl",
-
-          "will-change-[transform,box-shadow]",
-          "transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]",
-
-          // ✅ focus expand + lift; others stay at 1 (clean)
-          focused ? "scale-[1.065] -translate-y-2 z-20" : "scale-100",
-
-          "shadow-[0_18px_70px_rgba(0,0,0,0.55)]",
-          focused ? "shadow-[0_45px_180px_rgba(0,0,0,0.85)]" : "",
+          // LONGER
+          "relative w-full aspect-[3/5] overflow-hidden rounded-xl bg-[#0a0a0a]",
+          // baseline (no shadows)
+          "border bg-white/[0.03] border-white/6",
+          // hover/focus micro-interaction
+          reducedMotion || isTouch
+            ? ""
+            : "transition-[transform,background-color,border-color] duration-200 ease-out will-change-transform",
+          reducedMotion || isTouch
+            ? ""
+            : "hover:scale-[1.03] focus-visible:scale-[1.03] active:scale-[1.01]",
+          focused ? "bg-white/[0.06] border-white/12" : "",
         ].join(" ")}
+        style={{
+          transformOrigin: "center",
+          backfaceVisibility: "hidden",
+        }}
       >
-        {/* WOW glow ring (anime vibe: violet + cyan) */}
+        {/* Rim light (cheap) */}
         <div
           className={[
-            "pointer-events-none absolute -inset-[2px] rounded-[20px]",
-            "opacity-0 transition-opacity duration-300",
+            "absolute inset-x-0 top-0 h-[1.5px] z-40",
+            "bg-gradient-to-r from-transparent via-white/50 to-transparent",
+            "transition-opacity duration-200",
             focused ? "opacity-100" : "opacity-0",
           ].join(" ")}
-          style={{
-            background:
-              "radial-gradient(circle at 50% 15%, rgba(168,85,247,0.32), rgba(34,211,238,0.14) 35%, rgba(0,0,0,0) 62%)",
-          }}
         />
-
-        {/* Ghost backdrop */}
-        <img
-          src={item.poster}
-          alt=""
-          aria-hidden="true"
-          className={[
-            "absolute inset-0 h-full w-full",
-            "object-cover",
-            "scale-[1.08]",
-            "blur-xl",
-            "opacity-35",
-            "[transform:translateZ(0)] [backface-visibility:hidden]",
-          ].join(" ")}
-          draggable={false}
-          loading="lazy"
-          decoding="async"
-        />
-
-        {/* ✅ lighter overlay (less “black haze”) */}
-        <div className="absolute inset-0 bg-black/45" />
 
         {/* Poster */}
         <img
           src={item.poster}
           alt={item.title}
           className={[
-            "absolute inset-0 h-full w-full select-none",
-            "object-contain",
-            "opacity-100 transition-opacity duration-200",
-            isTouch ? "" : "group-hover:opacity-0",
-            "[transform:translateZ(0)] [backface-visibility:hidden]",
+            "absolute inset-0 h-full w-full object-cover",
+            "transition-opacity duration-200",
+            focused && !isTouch ? "opacity-0" : "opacity-100",
           ].join(" ")}
-          loading="lazy"
           decoding="async"
+          loading="lazy"
           draggable={false}
         />
 
-        {/* Video */}
+        {/* Video (desktop hover only) */}
         <video
           ref={videoRef}
-          data-src={item.mp4}
+          src={item.mp4}
           className={[
-            "pointer-events-none absolute inset-0 h-full w-full",
-            "object-contain",
-            "opacity-0 transition-opacity duration-200",
-            isTouch ? "opacity-100" : "group-hover:opacity-100",
-            "will-change-[opacity]",
-            "[transform:translateZ(0)] [backface-visibility:hidden]",
+            "absolute inset-0 h-full w-full object-cover",
+            "transition-opacity duration-200",
+            focused && !isTouch ? "opacity-100" : "opacity-0",
           ].join(" ")}
           muted
           loop
           playsInline
-          preload="metadata"
-          poster={item.poster}
-          controls={false}
-          controlsList="nodownload noremoteplayback"
-          disablePictureInPicture
-          onContextMenuCapture={(e) => e.preventDefault()}
+          preload="none"
         />
 
-        {/* transparent interceptor layer (captures right click) */}
-        <div
-          className="absolute inset-0 z-10"
-          onContextMenuCapture={(e) => e.preventDefault()}
-        />
-
-        {/* vignette (subtle, no heavy bottom black) */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0)_0%,rgba(0,0,0,0.22)_70%,rgba(0,0,0,0.42)_100%)]" />
-
-        {/* ultra-subtle frame */}
-        <div className="pointer-events-none absolute inset-0 shadow-[0_0_0_1px_rgba(255,255,255,0.035)]" />
+        {/* NO TITLE / NO TEXT OVERLAY */}
       </div>
     </button>
   );
 }
 
 export default function AnimeGrid({ items }: { items: AnimeWork[] }) {
+  const reducedMotion = usePrefersReducedMotion();
   const [isTouch, setIsTouch] = useState(false);
   const [active, setActive] = useState<AnimeWork | null>(null);
   const [hoverId, setHoverId] = useState<string | null>(null);
+
+  const playing = useRef<HTMLVideoElement[]>([]);
+  const MAX_PLAYING = 1;
 
   useEffect(() => {
     setIsTouch(isTouchDevice());
   }, []);
 
-  // ✅ Block right-click menu ONLY while this grid is mounted
-  useEffect(() => {
-    const block = (e: MouseEvent) => e.preventDefault();
-    document.addEventListener("contextmenu", block, { capture: true });
-    return () => {
-      document.removeEventListener("contextmenu", block, { capture: true } as any);
-    };
-  }, []);
-
-  const MAX_PLAYING = 1;
-  const playing = useRef<HTMLVideoElement[]>([]);
-
   const controller = useRef<PlaybackController>({
     requestPlay: (v) => {
-      ensureVideoSrc(v);
       if (playing.current.includes(v)) return;
-
-      try {
-        v.preload = "metadata";
-      } catch {}
 
       while (playing.current.length >= MAX_PLAYING) {
         const old = playing.current.shift();
-        if (!old) continue;
-        try {
-          old.pause();
-        } catch {}
+        if (old) {
+          try {
+            old.pause();
+          } catch {}
+        }
       }
-
-      playing.current.push(v);
 
       try {
-        const p = v.play();
-        if (p && typeof (p as Promise<void>).catch === "function") {
-          (p as Promise<void>).catch(() => {
-            playing.current = playing.current.filter((x) => x !== v);
-          });
-        }
-      } catch {
-        playing.current = playing.current.filter((x) => x !== v);
-      }
-    },
+        if (v.preload !== "metadata") v.preload = "metadata";
+        if (v.readyState === 0) v.load();
+      } catch {}
 
+      playing.current.push(v);
+      v.play().catch(() => {});
+    },
     release: (v) => {
       playing.current = playing.current.filter((x) => x !== v);
       try {
         v.pause();
       } catch {}
     },
+    stopAll: () => {
+      for (const v of playing.current) {
+        try {
+          v.pause();
+        } catch {}
+      }
+      playing.current = [];
+    },
   });
+
+  useEffect(() => {
+    return () => controller.current.stopAll();
+  }, []);
+
+  const ordered = useMemo(() => items, [items]);
 
   return (
     <>
-      <div
-        className="w-full px-2 sm:px-3 lg:px-4"
-        onContextMenuCapture={(e) => e.preventDefault()}
-      >
-        {/* ✅ 4 columns on desktop + tighter gaps */}
-        <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
-          {items.map((item) => (
+      <div className="w-full bg-[#050505] min-h-screen pt-0 pb-14 px-4 md:px-8 -mt-16 md:-mt-20">
+        <div className="max-w-[1920px] mx-auto grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+          {ordered.map((item, idx) => (
             <AnimeItem
               key={item.id}
               item={item}
+              index={idx}
+              onOpen={(it) => setActive(it)}
               isTouch={isTouch}
               controller={controller.current}
-              onOpen={(it) => setActive(it)}
-              onHoverChange={setHoverId}
               focused={!isTouch && hoverId === item.id}
+              onHoverChange={setHoverId}
+              reducedMotion={reducedMotion}
             />
           ))}
         </div>
       </div>
+
+      <style>{`
+        @media (prefers-reduced-motion: no-preference) {
+          .reveal-card {
+            opacity: 0;
+            transform: translate3d(0, 14px, 0);
+            animation: revealIn 520ms cubic-bezier(0.2, 1, 0.2, 1) forwards;
+            animation-delay: var(--d, 0ms);
+            will-change: opacity, transform;
+          }
+          @keyframes revealIn {
+            to {
+              opacity: 1;
+              transform: translate3d(0, 0, 0);
+            }
+          }
+        }
+      `}</style>
 
       <FullscreenPreviewModal
         open={active !== null}
         title={active?.title ?? ""}
         poster={active?.poster ?? ""}
         mp4={active?.mp4 ?? ""}
-        buyUrl={active?.buyUrl ?? ""}
-        priceLabel={active?.priceLabel ?? ""}
         onClose={() => setActive(null)}
       />
     </>
